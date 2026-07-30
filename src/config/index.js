@@ -11,10 +11,11 @@ export const config = {
 
   // Vertex AI
   vertexAI: {
+    projectId: process.env.GCP_PROJECT_ID || 'phi-openclaw',
     location: process.env.VERTEX_AI_LOCATION || 'us-central1',
     models: {
       pro: 'gemini-2.5-pro',
-      flash: 'gemini-2.0-flash',
+      flash: 'gemini-2.5-flash',
       embedding: 'text-embedding-004'
     }
   },

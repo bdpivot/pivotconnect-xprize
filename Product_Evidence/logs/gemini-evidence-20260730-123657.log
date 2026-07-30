@@ -1,0 +1,39 @@
+The VertexAI class and all its dependencies are deprecated as of June 24, 2025 and will be removed on June 24, 2026. Please use the Google Gen AI SDK (https://www.npmjs.com/package/@google/genai) to access Gemini features. For details, see https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk.
+2026-07-30T16:36:57.656Z [[32minfo[39m]: Gemini client initialized {"service":"launchpad-ai","environment":"development","project":"phi-openclaw","location":"us-central1","models":["pro","flash","embedding"]}
+==============================================
+ PivotConnect — Gemini Usage Evidence Run
+ Project:  undefined
+ Location: us-central1
+ Models:   {"pro":"gemini-2.5-pro","flash":"gemini-2.0-flash","embedding":"text-embedding-004"}
+ Started:  2026-07-30T16:36:57.659Z
+==============================================
+
+2026-07-30T16:37:01.655Z [[32minfo[39m]: Gemini 2.5 Pro response {"service":"launchpad-ai","environment":"development","candidatesCount":1,"hasText":true,"hasFunctionCall":false}
+[2026-07-30T16:37:01.656Z] PRO   ok   model=gemini-2.5-pro finish=MAX_TOKENS chars=35
+2026-07-30T16:37:05.093Z [[32minfo[39m]: Gemini 2.5 Pro response {"service":"launchpad-ai","environment":"development","candidatesCount":1,"hasText":true,"hasFunctionCall":false}
+[2026-07-30T16:37:05.093Z] PRO   ok   model=gemini-2.5-pro finish=MAX_TOKENS chars=38
+2026-07-30T16:37:08.610Z [[32minfo[39m]: Gemini 2.5 Pro response {"service":"launchpad-ai","environment":"development","candidatesCount":1,"hasText":true,"hasFunctionCall":false}
+[2026-07-30T16:37:08.610Z] PRO   ok   model=gemini-2.5-pro finish=MAX_TOKENS chars=49
+2026-07-30T16:37:08.762Z [[31merror[39m]: Gemini 2.0 Flash error {"service":"launchpad-ai","environment":"development","error":"[VertexAI.ClientError]: got status: 404 Not Found. {\"error\":{\"code\":404,\"message\":\"Publisher model `projects/phi-openclaw/locations/us-central1/publishers/google/models/gemini-2.0-flash` was not found or your project does not have access to it. Ensure you are using a valid model name and that the model is available in the specified region. For more information, see: https://docs.cloud.google.com/gemini-enterprise-agent-platform/resources/locations.\",\"status\":\"NOT_FOUND\"}}"}
+[2026-07-30T16:37:08.763Z] FLASH ERR  Gemini Flash generation failed: [VertexAI.ClientError]: got status: 404 Not Found. {"error":{"code":404,"message":"Publisher model `projects/phi-openclaw/locations/us-central1/publishers/google/models/gemini-2.0-flash` was not found or your project does not have access to it. Ensure you are using a valid model name and that the model is available in the specified region. For more information, see: https://docs.cloud.google.com/gemini-enterprise-agent-platform/resources/locations.","status":"NOT_FOUND"}}
+2026-07-30T16:37:08.879Z [[31merror[39m]: Gemini 2.0 Flash error {"service":"launchpad-ai","environment":"development","error":"[VertexAI.ClientError]: got status: 404 Not Found. {\"error\":{\"code\":404,\"message\":\"Publisher model `projects/phi-openclaw/locations/us-central1/publishers/google/models/gemini-2.0-flash` was not found or your project does not have access to it. Ensure you are using a valid model name and that the model is available in the specified region. For more information, see: https://docs.cloud.google.com/gemini-enterprise-agent-platform/resources/locations.\",\"status\":\"NOT_FOUND\"}}"}
+[2026-07-30T16:37:08.879Z] FLASH ERR  Gemini Flash generation failed: [VertexAI.ClientError]: got status: 404 Not Found. {"error":{"code":404,"message":"Publisher model `projects/phi-openclaw/locations/us-central1/publishers/google/models/gemini-2.0-flash` was not found or your project does not have access to it. Ensure you are using a valid model name and that the model is available in the specified region. For more information, see: https://docs.cloud.google.com/gemini-enterprise-agent-platform/resources/locations.","status":"NOT_FOUND"}}
+2026-07-30T16:37:09.000Z [[31merror[39m]: Gemini 2.0 Flash error {"service":"launchpad-ai","environment":"development","error":"[VertexAI.ClientError]: got status: 404 Not Found. {\"error\":{\"code\":404,\"message\":\"Publisher model `projects/phi-openclaw/locations/us-central1/publishers/google/models/gemini-2.0-flash` was not found or your project does not have access to it. Ensure you are using a valid model name and that the model is available in the specified region. For more information, see: https://docs.cloud.google.com/gemini-enterprise-agent-platform/resources/locations.\",\"status\":\"NOT_FOUND\"}}"}
+[2026-07-30T16:37:09.001Z] FLASH ERR  Gemini Flash generation failed: [VertexAI.ClientError]: got status: 404 Not Found. {"error":{"code":404,"message":"Publisher model `projects/phi-openclaw/locations/us-central1/publishers/google/models/gemini-2.0-flash` was not found or your project does not have access to it. Ensure you are using a valid model name and that the model is available in the specified region. For more information, see: https://docs.cloud.google.com/gemini-enterprise-agent-platform/resources/locations.","status":"NOT_FOUND"}}
+2026-07-30T16:37:09.001Z [[31merror[39m]: Gemini Embeddings error {"service":"launchpad-ai","environment":"development","error":"this.models.embedding.embedContent is not a function"}
+[2026-07-30T16:37:09.001Z] EMBED ERR  Gemini Embeddings generation failed: this.models.embedding.embedContent is not a function
+2026-07-30T16:37:09.001Z [[31merror[39m]: Gemini Embeddings error {"service":"launchpad-ai","environment":"development","error":"this.models.embedding.embedContent is not a function"}
+[2026-07-30T16:37:09.001Z] EMBED ERR  Gemini Embeddings generation failed: this.models.embedding.embedContent is not a function
+2026-07-30T16:37:09.002Z [[31merror[39m]: Gemini Embeddings error {"service":"launchpad-ai","environment":"development","error":"this.models.embedding.embedContent is not a function"}
+[2026-07-30T16:37:09.002Z] EMBED ERR  Gemini Embeddings generation failed: this.models.embedding.embedContent is not a function
+2026-07-30T16:37:09.002Z [[31merror[39m]: Gemini Embeddings error {"service":"launchpad-ai","environment":"development","error":"this.models.embedding.embedContent is not a function"}
+[2026-07-30T16:37:09.002Z] EMBED ERR  Gemini Embeddings generation failed: this.models.embedding.embedContent is not a function
+
+==============================================
+ Summary
+  Gemini 2.5 Pro calls:   3
+  Gemini 2.5 Flash calls: 0
+  Embedding calls:        0
+  Errors:                 7
+  Finished: 2026-07-30T16:37:09.002Z
+==============================================

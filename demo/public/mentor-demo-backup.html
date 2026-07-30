@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PivotConnect - AI-Powered Mentor Matching Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 1400px;
+      height: 95vh;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      overflow: hidden;
+    }
+
+    .chat-section {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #e0e0e0;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 30px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header .tagline {
+      font-size: 14px;
+      opacity: 0.9;
+      font-weight: 400;
+      margin-top: 5px;
+    }
+
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 30px;
+      background: #f8f9fa;
+    }
+
+    .message {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 15px;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user {
+      flex-direction: row-reverse;
+    }
+
+    .message .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .message.user .avatar {
+      background: #667eea;
+      color: white;
+    }
+
+    .message.agent .avatar {
+      background: #f0f0f0;
+    }
+
+    .message .content {
+      max-width: 70%;
+      padding: 15px 20px;
+      border-radius: 15px;
+      line-height: 1.6;
+    }
+
+    .message.user .content {
+      background: #667eea;
+      color: white;
+      border-bottom-right-radius: 5px;
+    }
+
+    .message.agent .content {
+      background: white;
+      color: #333;
+      border-bottom-left-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .message .agent-name {
+      font-weight: 600;
+      color: #667eea;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .input-area {
+      padding: 20px 30px;
+      background: white;
+      border-top: 1px solid #e0e0e0;
+      display: flex;
+      gap: 15px;
+    }
+
+    .input-area input {
+      flex: 1;
+      padding: 15px 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 25px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .input-area button {
+      padding: 15px 30px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .sidebar {
+      background: #fafbfc;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: 20px;
+      background: white;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .sidebar-header h2 {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .sidebar-header p {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .matches-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .match-card {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      animation: slideIn 0.5s ease-out;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .match-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .match-score {
+      display: inline-block;
+      padding: 4px 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .mentor-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .mentor-title {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .mentor-expertise {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+
+    .expertise-tag {
+      padding: 4px 10px;
+      background: #f0f0f0;
+      border-radius: 10px;
+      font-size: 11px;
+      color: #666;
+    }
+
+    .mentor-availability {
+      font-size: 12px;
+      color: #28a745;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .match-reason {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.5;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .welcome-message {
+      text-align: center;
+      padding: 50px 20px;
+      color: #666;
+    }
+
+    .welcome-message h2 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 28px;
+    }
+
+    .loading-matches {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f0f0f0;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Chat Section -->
+    <div class="chat-section">
+      <div class="header">
+        <h1>🧭 PivotConnect</h1>
+        <div class="tagline">AI-Powered Mentor Matching for Entrepreneurs</div>
+      </div>
+
+      <div class="chat-container" id="chatContainer">
+        <div class="welcome-message">
+          <h2>Welcome to PivotConnect</h2>
+          <p>Tell me about your business, and I'll connect you with seasoned mentors who've been exactly where you are.</p>
+        </div>
+      </div>
+
+      <div class="input-area">
+        <input 
+          type="text" 
+          id="userInput" 
+          placeholder="Describe your business or challenge..."
+          onkeypress="if(event.key === 'Enter') sendMessage()"
+        />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+    <!-- Mentor Matches Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h2>Mentor Matches</h2>
+        <p>AI-curated based on your needs</p>
+      </div>
+      <div class="matches-container" id="matchesContainer">
+        <div class="loading-matches" id="loadingState" style="display: none;">
+          <div class="loading-spinner"></div>
+          <p>Finding your perfect mentors...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chatContainer = document.getElementById('chatContainer');
+    const matchesContainer = document.getElementById('matchesContainer');
+    const loadingState = document.getElementById('loadingState');
+    const userInput = document.getElementById('userInput');
+
+    // Demo mentor database
+    const mentors = [
+      {
+        name: "Margaret Chen",
+        title: "Former CEO, EcoTextiles Inc.",
+        years: "35 years in sustainable manufacturing",
+        expertise: ["Sustainable Fashion", "Supply Chain", "B2B Sales", "Scaling"],
+        availability: "2 hours/month",
+        matchScore: 96,
+        reason: "Built a $50M sustainable textile company from scratch. Deep expertise in eco-friendly manufacturing and ethical supply chains."
+      },
+      {
+        name: "James Morrison",
+        title: "Retired CFO, Fashion Brands Group",
+        years: "25 years in fashion finance",
+        expertise: ["Financial Modeling", "Fundraising", "Fashion Industry", "Growth Strategy"],
+        availability: "4 hours/month",
+        matchScore: 92,
+        reason: "Led fundraising for 3 fashion startups that reached $10M+ revenue. Expert in fashion industry financial planning."
+      },
+      {
+        name: "Sarah Patel",
+        title: "Former VP Marketing, Patagonia",
+        years: "20 years in sustainable brand building",
+        expertise: ["Brand Strategy", "Sustainability Marketing", "DTC", "Community Building"],
+        availability: "3 hours/month",
+        matchScore: 89,
+        reason: "Built authentic sustainable fashion brands. Knows how to connect with conscious consumers and tell compelling stories."
+      },
+      {
+        name: "Robert Davidson",
+        title: "Serial Entrepreneur, 4 exits",
+        years: "30 years in retail & e-commerce",
+        expertise: ["E-commerce", "Operations", "Lean Startup", "Fashion Retail"],
+        availability: "2 hours/month",
+        matchScore: 87,
+        reason: "Founded and sold 2 fashion e-commerce companies. Understands the challenges of starting lean and scaling profitably."
+      }
+    ];
+
+    // Demo conversation
+    const demoScript = [
+      {
+        role: 'user',
+        content: 'I want to start a sustainable fashion business selling eco-friendly basics online. I have $15K to start, but no industry experience.'
+      },
+      {
+        role: 'agent',
+        agent: 'Compass',
+        emoji: '🧭',
+        content: 'Great! Let me understand your needs better.\n\nYou\'re entering sustainable fashion with:\n• Limited capital ($15K)\n• E-commerce focus\n• Need for industry guidance\n\nI\'m analyzing our mentor network for the best matches. Looking for mentors with:\n\n✓ Sustainable fashion experience\n✓ E-commerce expertise\n✓ Experience with bootstrapped startups\n✓ Availability to support early-stage founders\n\nSearching through 247 mentors in our network...',
+        showMatches: true
+      },
+      {
+        role: 'agent',
+        agent: 'Compass',
+        emoji: '🧭',
+        content: '**Found 4 exceptional matches!**\n\nI\'ve identified mentors who:\n• Built sustainable fashion businesses from scratch\n• Understand your capital constraints\n• Have real e-commerce scaling experience\n• Are actively mentoring right now\n\nCheck the matches on the right. Each mentor has walked a similar path and can help you avoid costly mistakes.\n\n**Top recommendation: Margaret Chen** (96% match)\nFormer CEO of EcoTextiles — she literally wrote the book on sustainable fashion manufacturing with limited capital.'
+      },
+      {
+        role: 'user',
+        content: 'This is incredible! How do I connect with Margaret?'
+      },
+      {
+        role: 'agent',
+        agent: 'Compass',
+        emoji: '🧭',
+        content: '**Here\'s how it works:**\n\n1. **Review her profile** - Watch her intro video and read about her journey\n2. **Submit a connection request** - Tell her why you\'re excited to learn from her\n3. **AI-assisted introduction** - I\'ll craft a compelling intro based on your goals and her expertise\n4. **Schedule first session** - Once she accepts, book a 60-min initial mentorship call\n\n**What makes this different:**\n• AI matches based on deep compatibility (not just keywords)\n• Mentors are **actually available** (verified weekly)\n• Structured mentorship program (not random coffee chats)\n• Progress tracking & accountability built-in\n\nMargaret typically responds within 48 hours. Want me to draft your connection request now?'
+      }
+    ];
+
+    let currentStep = 0;
+
+    function clearWelcome() {
+      const welcome = chatContainer.querySelector('.welcome-message');
+      if (welcome) welcome.remove();
+    }
+
+    function addMessage(message) {
+      clearWelcome();
+
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${message.role}`;
+
+      if (message.role === 'user') {
+        messageDiv.innerHTML = `
+          <div class="content">${message.content}</div>
+          <div class="avatar">👤</div>
+        `;
+      } else {
+        messageDiv.innerHTML = `
+          <div class="avatar">${message.emoji}</div>
+          <div class="content">
+            <div class="agent-name">${message.emoji} ${message.agent}</div>
+            ${message.content.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}
+          </div>
+        `;
+      }
+
+      chatContainer.appendChild(messageDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      // Show matches after Compass starts searching
+      if (message.showMatches) {
+        setTimeout(showMatches, 1500);
+      }
+    }
+
+    function showMatches() {
+      loadingState.style.display = 'block';
+      
+      setTimeout(() => {
+        loadingState.style.display = 'none';
+        
+        mentors.forEach((mentor, index) => {
+          setTimeout(() => {
+            const card = document.createElement('div');
+            card.className = 'match-card';
+            card.innerHTML = `
+              <div class="match-score">${mentor.matchScore}% Match</div>
+              <div class="mentor-name">${mentor.name}</div>
+              <div class="mentor-title">${mentor.title}</div>
+              <div class="mentor-expertise">
+                ${mentor.expertise.map(e => `<span class="expertise-tag">${e}</span>`).join('')}
+              </div>
+              <div class="mentor-availability">✓ Available: ${mentor.availability}</div>
+              <div class="match-reason">${mentor.reason}</div>
+            `;
+            matchesContainer.appendChild(card);
+          }, index * 300);
+        });
+      }, 2000);
+    }
+
+    function sendMessage() {
+      if (currentStep >= demoScript.length) {
+        // Demo complete
+        return;
+      }
+
+      const message = demoScript[currentStep];
+      
+      if (message.role === 'user') {
+        // Show user message
+        userInput.value = message.content;
+        userInput.disabled = true;
+        
+        setTimeout(() => {
+          addMessage(message);
+          userInput.value = '';
+          userInput.disabled = false;
+          currentStep++;
+          
+          // Auto-trigger agent response
+          if (currentStep < demoScript.length && demoScript[currentStep].role === 'agent') {
+            setTimeout(sendMessage, 1500);
+          }
+        }, 500);
+      } else {
+        // Agent message
+        addMessage(message);
+        currentStep++;
+        
+        // If next message is also agent, auto-continue
+        if (currentStep < demoScript.length && demoScript[currentStep].role === 'agent') {
+          setTimeout(sendMessage, 2000);
+        }
+      }
+    }
+  </script>
+</body>
+</html>

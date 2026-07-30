@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LaunchPad AI Demo - Pivot Holdings International</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 900px;
+      height: 90vh;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header .logo {
+      font-size: 32px;
+    }
+
+    .header .tagline {
+      font-size: 14px;
+      opacity: 0.9;
+      font-weight: 400;
+    }
+
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 30px;
+      background: #f8f9fa;
+    }
+
+    .message {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 15px;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user {
+      flex-direction: row-reverse;
+    }
+
+    .message .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .message.user .avatar {
+      background: #667eea;
+      color: white;
+    }
+
+    .message.agent .avatar {
+      background: #f0f0f0;
+    }
+
+    .message .content {
+      max-width: 70%;
+      padding: 15px 20px;
+      border-radius: 15px;
+      line-height: 1.6;
+    }
+
+    .message.user .content {
+      background: #667eea;
+      color: white;
+      border-bottom-right-radius: 5px;
+    }
+
+    .message.agent .content {
+      background: white;
+      color: #333;
+      border-bottom-left-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .message .agent-name {
+      font-weight: 600;
+      color: #667eea;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .typing-indicator {
+      display: flex;
+      gap: 5px;
+      padding: 15px 20px;
+      background: white;
+      border-radius: 15px;
+      width: fit-content;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .typing-indicator span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #667eea;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+      30% { transform: translateY(-10px); opacity: 1; }
+    }
+
+    .input-area {
+      padding: 20px 30px;
+      background: white;
+      border-top: 1px solid #e0e0e0;
+      display: flex;
+      gap: 15px;
+    }
+
+    .input-area input {
+      flex: 1;
+      padding: 15px 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 25px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .input-area input:focus {
+      border-color: #667eea;
+    }
+
+    .input-area button {
+      padding: 15px 30px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .input-area button:hover {
+      transform: scale(1.05);
+    }
+
+    .input-area button:active {
+      transform: scale(0.95);
+    }
+
+    .route-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      background: #f0f0f0;
+      border-radius: 10px;
+      font-size: 12px;
+      color: #666;
+      margin-top: 10px;
+    }
+
+    .welcome-message {
+      text-align: center;
+      padding: 50px 20px;
+      color: #666;
+    }
+
+    .welcome-message h2 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 28px;
+    }
+
+    .welcome-message p {
+      font-size: 16px;
+      line-height: 1.6;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1><span class="logo">🦅</span> LaunchPad AI</h1>
+        <div class="tagline">Powered by Pivot Holdings International</div>
+      </div>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+      <div class="welcome-message">
+        <h2>Welcome to LaunchPad AI</h2>
+        <p>Your AI-powered entrepreneurship coaching team. Ask me anything about starting or growing your business.</p>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <input 
+        type="text" 
+        id="userInput" 
+        placeholder="Ask about your business idea..."
+        onkeypress="if(event.key === 'Enter') sendMessage()"
+      />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const chatContainer = document.getElementById('chatContainer');
+    const userInput = document.getElementById('userInput');
+
+    // Demo conversation script
+    const demoScript = [
+      {
+        role: 'user',
+        content: 'I want to start a sustainable fashion business, but I don\'t know where to begin.'
+      },
+      {
+        role: 'agent',
+        agent: 'Phoenix',
+        emoji: '🦅',
+        content: 'Welcome to LaunchPad AI! It\'s great to have you here.\n\nStarting a sustainable fashion business is not just a commercial venture — it\'s a statement about the kind of world you want to help create. Let me break this down into clear next steps:\n\n**1. Define Your Niche**\nSustainable fashion is broad. Are you focused on:\n• Eco-friendly materials (organic cotton, recycled fabrics)?\n• Ethical manufacturing (fair wages, local production)?\n• Circular fashion (rental, resale, upcycling)?\n\n**2. Validate Your Market**\nBefore investing heavily, test your concept:\n• Survey potential customers\n• Create a mood board or prototype\n• Research your competition\n\n**3. Start Lean**\nYou don\'t need a full clothing line day one:\n• Consider starting with 3-5 signature pieces\n• Partner with existing manufacturers initially\n• Build your brand story and community\n\nWhat aspect of sustainable fashion excites you most?'
+      },
+      {
+        role: 'user',
+        content: 'What\'s the market size for sustainable fashion?'
+      },
+      {
+        role: 'agent',
+        agent: 'Phoenix',
+        emoji: '🦅',
+        content: 'Great question! Let me connect you with Atlas, our market research specialist.',
+        route: 'Routing to Atlas 🗺️'
+      },
+      {
+        role: 'agent',
+        agent: 'Atlas',
+        emoji: '🗺️',
+        content: 'Based on current market research:\n\n**Global Sustainable Fashion Market**\n• Current size: $7.8 billion (2023)\n• Projected CAGR: 9.7% through 2030\n• Expected value: $15.2 billion by 2030\n\n**Key Growth Drivers:**\n• Gen Z & Millennial purchasing power (63% willing to pay premium)\n• Regulatory pressure (EU due diligence laws)\n• Technology enablement (blockchain for supply chain transparency)\n\n**Market Segments:**\n• Organic/recycled materials: 42% of market\n• Secondhand/rental: 31% (fastest growing)\n• Ethical manufacturing: 27%\n\n**Geographic Hotspots:**\n• North America: $2.9B\n• Europe: $3.1B (leading)\n• Asia-Pacific: $1.5B (fastest growth)\n\nThe opportunity is real and growing. The question is: where will you position yourself?'
+      },
+      {
+        role: 'user',
+        content: 'How much money do I need to get started?'
+      },
+      {
+        role: 'agent',
+        agent: 'Phoenix',
+        emoji: '🦅',
+        content: 'Excellent question. Let me bring in Ledger to help model this out.',
+        route: 'Routing to Ledger 📊'
+      },
+      {
+        role: 'agent',
+        agent: 'Ledger',
+        emoji: '📊',
+        content: 'Let\'s break down the startup costs for a lean sustainable fashion launch:\n\n**Initial Investment Estimate**\n\n**Product Development: $8,000 - $15,000**\n• Sample production (3-5 pieces): $3,000\n• Pattern development: $2,000\n• Material sourcing: $3,000 - $10,000\n\n**Legal & Admin: $2,000 - $4,000**\n• Business formation (LLC/Corp): $500\n• Trademark: $1,000\n• Certifications (organic, fair trade): $500 - $2,500\n\n**Marketing & Launch: $3,000 - $8,000**\n• Website & e-commerce: $2,000\n• Photography: $1,000 - $3,000\n• Initial marketing: $2,000\n\n**Operations Buffer: $2,000 - $5,000**\n• Inventory (first small run): variable\n• Shipping supplies: $500\n• Contingency: $1,500+\n\n**Total Startup Range: $15,000 - $32,000**\n\n**Lean Strategy (Under $10K):**\n• Start with 1-2 hero products\n• Pre-orders to fund production\n• Partner with existing manufacturers (no MOQ)\n• DIY website (Shopify + Instagram)\n\nWould you like me to model a specific scenario based on your budget?'
+      }
+    ];
+
+    let currentStep = 0;
+
+    function clearWelcome() {
+      const welcome = chatContainer.querySelector('.welcome-message');
+      if (welcome) {
+        welcome.remove();
+      }
+    }
+
+    function addMessage(message) {
+      clearWelcome();
+
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${message.role}`;
+
+      if (message.role === 'user') {
+        messageDiv.innerHTML = `
+          <div class="content">${message.content}</div>
+          <div class="avatar">👤</div>
+        `;
+      } else {
+        const agentName = message.agent || 'Phoenix';
+        const emoji = message.emoji || '🦅';
+        messageDiv.innerHTML = `
+          <div class="avatar">${emoji}</div>
+          <div class="content">
+            <div class="agent-name">${emoji} ${agentName}</div>
+            ${message.content.replace(/\n/g, '<br>')}
+            ${message.route ? `<div class="route-badge">${message.route}</div>` : ''}
+          </div>
+        `;
+      }
+
+      chatContainer.appendChild(messageDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'message agent';
+      typingDiv.id = 'typing';
+      typingDiv.innerHTML = `
+        <div class="avatar">🦅</div>
+        <div class="typing-indicator">
+          <span></span><span></span><span></span>
+        </div>
+      `;
+      chatContainer.appendChild(typingDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+      const typing = document.getElementById('typing');
+      if (typing) typing.remove();
+    }
+
+    function sendMessage() {
+      if (currentStep >= demoScript.length) {
+        return;
+      }
+
+      const message = demoScript[currentStep];
+      
+      if (message.role === 'user') {
+        userInput.value = message.content;
+        
+        setTimeout(() => {
+          addMessage(message);
+          userInput.value = '';
+          currentStep++;
+          
+          // Auto-trigger next message if it's an agent
+          if (currentStep < demoScript.length) {
+            showTypingIndicator();
+            setTimeout(() => {
+              removeTypingIndicator();
+              sendMessage();
+            }, 2000);
+          }
+        }, 500);
+      } else {
+        addMessage(message);
+        currentStep++;
+      }
+    }
+
+    // Auto-start demo on load (optional)
+    // setTimeout(() => sendMessage(), 2000);
+  </script>
+</body>
+</html>

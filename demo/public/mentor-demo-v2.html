@@ -1,1013 +1,1314 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PivotConnect - AI-Powered Mentor Matching Demo</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>PivotConnect Judge Demo — Interactive Product Prototype</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root {
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --surface-3: #eef3f8;
+      --text: #132033;
+      --muted: #4b5a70;
+      --line: #d8e1eb;
+      --accent: #0f5bd7;
+      --accent-2: #0b4bb0;
+      --good: #1f7a4d;
+      --warn: #9a6700;
+      --focus: #ffbf47;
+      --shadow: 0 16px 40px rgba(19, 32, 51, 0.12);
+      --radius: 18px;
+      --radius-lg: 24px;
+      --max: 1440px;
     }
 
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      margin: 0;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(15, 91, 215, 0.08), transparent 32%),
+        linear-gradient(180deg, #f7f9fc 0%, #eef3f8 100%);
+      min-height: 100vh;
     }
 
-    .container {
-      width: 95%;
-      max-width: 1400px;
-      height: 95vh;
-      max-height: 95vh;
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      display: grid;
-      grid-template-columns: 1fr 400px;
-      overflow: hidden;
+    a { color: var(--accent); }
+    a:hover { color: var(--accent-2); }
+    img { max-width: 100%; }
+
+    .skip-link {
+      position: absolute;
+      left: -999px;
+      top: 0;
+      background: #fff;
+      color: #000;
+      padding: 0.75rem 1rem;
+      z-index: 1000;
+      border: 2px solid #000;
+      border-radius: 0 0 8px 8px;
+    }
+    .skip-link:focus { left: 1rem; top: 1rem; }
+
+    .shell {
+      width: min(100%, var(--max));
+      margin: 0 auto;
+      padding: 18px;
     }
 
-    .chat-section {
-      display: flex;
-      flex-direction: column;
-      border-right: 1px solid #e0e0e0;
-      height: 100%;
-      min-height: 0;
-      overflow: hidden;
-      position: relative;
+    .truth-banner {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: #0d1b2f;
+      color: #fff;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(255,255,255,0.1);
     }
-
-    .header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 20px 30px;
-      flex-shrink: 0;
-    }
-
-    .header h1 {
-      font-size: 24px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .header .tagline {
-      font-size: 14px;
-      opacity: 0.9;
-      font-weight: 400;
-      margin-top: 5px;
-    }
-
-    .chat-container {
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow-y: auto;
-      padding: 30px;
-      background: #f8f9fa;
-    }
-
-    .message {
-      margin-bottom: 20px;
-      display: flex;
-      gap: 15px;
-      animation: fadeIn 0.3s ease-in;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .message.user {
-      flex-direction: row-reverse;
-    }
-
-    .message .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
-    }
-
-    .message.user .avatar {
-      background: #667eea;
-      color: white;
-    }
-
-    .message.agent .avatar {
-      background: #f0f0f0;
-    }
-
-    .message .content {
-      max-width: 70%;
-      padding: 15px 20px;
-      border-radius: 15px;
-      line-height: 1.6;
-    }
-
-    .message.user .content {
-      background: #667eea;
-      color: white;
-      border-bottom-right-radius: 5px;
-    }
-
-    .message.agent .content {
-      background: white;
-      color: #333;
-      border-bottom-left-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    .message .agent-name {
-      font-weight: 600;
-      color: #667eea;
-      margin-bottom: 5px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .input-area {
-      padding: 20px 30px;
-      background: white;
-      border-top: 1px solid #e0e0e0;
-      display: flex;
-      gap: 15px;
-      align-items: center;
-      flex-shrink: 0;
-      height: 80px;
-      min-height: 80px;
-      max-height: 80px;
-    }
-
-    .input-area input {
-      flex: 1;
-      padding: 15px 20px;
-      border: 2px solid #e0e0e0;
-      border-radius: 25px;
-      font-size: 15px;
-      outline: none;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .input-area button {
-      padding: 15px 30px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 25px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      min-width: 100px;
-    }
-
-    .input-area button:hover:not(:disabled) {
-      transform: scale(1.05);
-    }
-
-    .input-area button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .demo-status {
-      font-size: 13px;
-      color: #666;
-    }
-
-    .sidebar {
-      background: #fafbfc;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      max-height: 100%;
-      overflow: hidden;
-    }
-
-    .sidebar-header {
-      padding: 20px;
-      background: white;
-      border-bottom: 1px solid #e0e0e0;
-      flex-shrink: 0;
-    }
-
-    .sidebar-header h2 {
-      font-size: 18px;
-      color: #333;
-      margin-bottom: 5px;
-    }
-
-    .sidebar-header p {
-      font-size: 13px;
-      color: #666;
-    }
-
-    .matches-container {
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow-y: auto;
-      padding: 20px;
-    }
-
-    .match-card {
-      background: white;
-      border-radius: 15px;
-      padding: 20px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      animation: slideIn 0.5s ease-out;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .match-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.12);
-    }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(20px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-
-    .match-score {
-      display: inline-block;
-      padding: 4px 12px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-
-    .mentor-name {
-      font-size: 18px;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 5px;
-    }
-
-    .mentor-title {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 10px;
-    }
-
-    .mentor-expertise {
+    .truth-banner__top {
       display: flex;
       flex-wrap: wrap;
-      gap: 5px;
-      margin-bottom: 10px;
-    }
-
-    .expertise-tag {
-      padding: 4px 10px;
-      background: #f0f0f0;
-      border-radius: 10px;
-      font-size: 11px;
-      color: #666;
-    }
-
-    .mentor-availability {
-      font-size: 12px;
-      color: #28a745;
-      margin-top: 10px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .match-reason {
-      font-size: 13px;
-      color: #666;
-      line-height: 1.5;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #f0f0f0;
-    }
-
-    /* Richer sidebar stages */
-    .stage-card {
-      background: white;
-      border-radius: 15px;
-      padding: 20px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      animation: slideIn 0.5s ease-out;
-    }
-    .stage-label {
-      font-size: 12px;
-      color: #999;
-      margin-bottom: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .intro-draft p {
-      font-size: 13px;
-      color: #444;
-      line-height: 1.6;
-      margin-bottom: 10px;
-    }
-    .intro-draft .hl {
-      background: #eef0ff;
-      color: #667eea;
-      padding: 1px 5px;
-      border-radius: 4px;
-      font-weight: 500;
-    }
-    .ai-note {
-      margin-top: 12px;
-      padding: 10px 12px;
-      background: #f8f9ff;
-      border-left: 3px solid #667eea;
-      border-radius: 6px;
-      font-size: 12px;
-      color: #555;
-      line-height: 1.5;
-    }
-    .accepted-badge {
-      display: inline-block;
-      padding: 6px 12px;
-      background: #e6f7ec;
-      color: #1f9d55;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-    .stage-card.confirmed .accepted-badge {
-      background: #eef0ff;
-      color: #667eea;
-    }
-    .slot-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 10px;
-    }
-    .slot {
-      padding: 14px 10px;
-      background: white;
-      border: 2px solid #e8e8e8;
-      border-radius: 12px;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 500;
-      color: #555;
-      animation: slideIn 0.4s ease-out;
-    }
-    .slot-selected {
-      border-color: #667eea;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      box-shadow: 0 4px 12px rgba(102,126,234,0.35);
-    }
-    .agenda-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #333;
-      margin: 18px 0 10px;
-    }
-    .agenda-item {
-      font-size: 13px;
-      color: #555;
-      padding: 8px 0;
-      border-bottom: 1px solid #f0f0f0;
-    }
-    .dash-metrics {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .metric {
-      background: white;
-      border-radius: 12px;
-      padding: 14px 8px;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      animation: slideIn 0.4s ease-out;
-    }
-    .metric-num {
-      font-size: 24px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .metric-label {
-      font-size: 11px;
-      color: #888;
-      margin-top: 4px;
-    }
-    .goal-item {
-      display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 13px;
-      color: #444;
-      padding: 10px 0;
-      border-bottom: 1px solid #f0f0f0;
+      justify-content: space-between;
     }
-    .goal-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      flex-shrink: 0;
-    }
-
-    /* Mentor profile stage */
-    .video-thumb {
-      position: relative;
-      height: 150px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #5a6fd6 0%, #6a4a9c 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 15px;
-      overflow: hidden;
-      cursor: pointer;
-    }
-    .mentor-video {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .mentor-video.playing {
-      opacity: 1;
-    }
-    .lower-third {
-      position: absolute;
-      left: 12px;
-      bottom: 12px;
-      padding: 8px 14px;
-      background: linear-gradient(135deg, rgba(102,126,234,0.92) 0%, rgba(118,74,162,0.92) 100%);
-      border-left: 3px solid #fff;
-      border-radius: 6px;
-      color: white;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-      pointer-events: none;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
-    }
-    .lower-third.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .lt-name {
-      font-size: 15px;
-      font-weight: 700;
+    .truth-banner h1 {
+      margin: 0;
+      font-size: clamp(1.1rem, 1.7vw, 1.55rem);
       line-height: 1.2;
+      letter-spacing: -0.02em;
     }
-    .lt-title {
-      font-size: 11px;
-      opacity: 0.9;
-      margin-top: 2px;
+    .truth-banner p {
+      margin: 8px 0 0;
+      color: rgba(255,255,255,0.85);
+      max-width: 980px;
+      line-height: 1.5;
+      font-size: 0.98rem;
     }
-    .video-avatar {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.18);
-      border: 2px solid rgba(255,255,255,0.5);
+    .banner-badges {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-    .play-btn {
-      position: absolute;
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.95);
-      color: #667eea;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      padding-left: 3px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
-    }
-    .video-caption {
-      position: absolute;
-      bottom: 8px;
-      right: 10px;
-      background: rgba(0,0,0,0.45);
-      color: white;
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 6px;
-    }
-    .profile-name {
-      font-size: 19px;
-      font-weight: 700;
-      color: #333;
-    }
-    .profile-title {
-      font-size: 13px;
-      color: #666;
-      margin-bottom: 14px;
-    }
-    .profile-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      flex-wrap: wrap;
       gap: 8px;
+      margin-top: 12px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.88rem;
+      color: #fff;
+      background: rgba(255,255,255,0.08);
+      white-space: nowrap;
+    }
+    .badge strong { font-weight: 700; }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.8fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .section {
+      padding: 20px;
+    }
+
+    .section + .section {
+      border-top: 1px solid var(--line);
+    }
+
+    .section h2,
+    .section h3 {
+      margin: 0 0 10px;
+      letter-spacing: -0.02em;
+    }
+    .section h2 { font-size: 1.25rem; }
+    .section h3 { font-size: 1.05rem; }
+    .section p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .intro-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .hero-copy {
+      padding: 22px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    }
+    .hero-copy .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e8f1ff;
+      color: #154aa7;
+      font-size: 0.84rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
       margin-bottom: 14px;
     }
-    .pstat {
-      text-align: center;
-      background: #f8f9ff;
-      border-radius: 10px;
-      padding: 10px 4px;
+    .hero-copy h2 {
+      font-size: clamp(1.5rem, 2.5vw, 2.1rem);
+      line-height: 1.08;
+      margin-bottom: 10px;
     }
-    .pstat-num {
-      font-size: 16px;
+    .hero-copy .lede {
+      font-size: 1.04rem;
+      color: #23344f;
+      max-width: 70ch;
+    }
+    .truth-note {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-left: 4px solid var(--accent);
+      background: #edf5ff;
+      border-radius: 12px;
+      color: #143057;
+      line-height: 1.5;
+    }
+
+    .summary-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .summary-box {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+    }
+    .summary-box h3 {
+      margin-bottom: 8px;
+      font-size: 0.98rem;
+    }
+    .summary-box ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .summary-box li + li { margin-top: 6px; }
+
+    .step-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .step-nav button,
+    .sample-buttons button,
+    .action-row button,
+    .mentor-card button,
+    .approval-check button {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 14px;
+      padding: 11px 14px;
+      font: inherit;
+      cursor: pointer;
+      transition: transform 120ms ease, border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease;
+    }
+    .step-nav button[aria-current="step"],
+    .sample-buttons button[aria-pressed="true"],
+    .action-row button.primary,
+    .approval-check button.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .step-nav button:hover,
+    .sample-buttons button:hover,
+    .action-row button:hover,
+    .mentor-card button:hover,
+    .approval-check button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(15, 91, 215, 0.10);
+    }
+
+    .step-nav button:focus-visible,
+    .sample-buttons button:focus-visible,
+    .action-row button:focus-visible,
+    .mentor-card button:focus-visible,
+    .approval-check button:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible,
+    select:focus-visible,
+    summary:focus-visible,
+    a:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    .main-grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.8fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel header {
+      padding: 18px 20px 0;
+    }
+    .panel header .eyebrow {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--surface-3);
+      color: var(--muted);
+      font-size: 0.82rem;
       font-weight: 700;
-      color: #667eea;
+      letter-spacing: 0.02em;
     }
-    .pstat-label {
-      font-size: 10px;
-      color: #888;
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+    .field label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #1b2b42;
+    }
+    .field small {
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font: inherit;
+      color: var(--text);
+      background: #fff;
+    }
+    .field textarea { min-height: 124px; resize: vertical; }
+    .field.wide { grid-column: 1 / -1; }
+
+    .sample-buttons,
+    .action-row,
+    .approval-check {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .stat {
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      min-height: 100px;
+    }
+    .stat .label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    .stat .value {
+      font-size: 1rem;
+      line-height: 1.45;
+      font-weight: 650;
+      color: #16253b;
+    }
+
+    .legend-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .legend-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fff;
+    }
+    .legend-card h4 {
+      margin: 0 0 6px;
+      font-size: 0.98rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .legend-card .chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      padding: 0 8px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      background: var(--surface-3);
+      color: var(--muted);
+    }
+    .legend-card p,
+    .legend-card ul {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .legend-card ul {
+      padding-left: 18px;
+      margin-top: 8px;
+    }
+
+    .mentor-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .mentor-card {
+      width: 100%;
+      text-align: left;
+      padding: 16px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      cursor: pointer;
+      display: grid;
+      gap: 8px;
+    }
+    .mentor-card[aria-pressed="true"] {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(15, 91, 215, 0.10);
+      background: linear-gradient(180deg, #ffffff, #f8fbff);
+    }
+    .mentor-card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+    .mentor-name {
+      font-size: 1.04rem;
+      font-weight: 800;
+      color: #132033;
+    }
+    .mentor-role {
+      color: var(--muted);
+      font-size: 0.95rem;
       margin-top: 2px;
     }
-    .profile-bio {
-      font-size: 13px;
-      color: #444;
-      line-height: 1.6;
-      font-style: italic;
-      padding: 12px;
-      background: #f8f9fa;
-      border-radius: 10px;
-      margin-bottom: 14px;
+    .score-pill {
+      flex: none;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #edf5ff;
+      color: #154aa7;
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
+    .mentor-card .why,
+    .mentor-card .caveat,
+    .detail .caveat {
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 0.94rem;
+    }
+    .mentor-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tag {
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #294157;
+      font-size: 0.82rem;
+      font-weight: 650;
     }
 
-    .welcome-message {
+    .detail {
+      display: grid;
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .detail-box {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface-2);
+      padding: 16px;
+    }
+    .detail-box .title-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .detail-box ul {
+      margin: 10px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .detail-box ul li + li { margin-top: 6px; }
+
+    .callout {
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: #fff6e8;
+      border: 1px solid #f0d59c;
+      border-radius: 16px;
+      color: #5d4300;
+      line-height: 1.5;
+    }
+
+    .approval {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .approval-box {
+      border-radius: 18px;
+      background: #eef8f1;
+      border: 1px solid #b8dfc3;
+      padding: 16px;
+    }
+    .approval-box strong { color: #1a5e3a; }
+    .approval-box p { margin: 0; color: #24533b; }
+
+    .followup-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .checklist {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fff;
+    }
+    .checklist h4 { margin: 0 0 8px; }
+    .checklist ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .checklist li + li { margin-top: 6px; }
+
+    .evidence {
+      position: sticky;
+      top: 128px;
+      display: grid;
+      gap: 14px;
+    }
+    .evidence .panel-body {
+      padding: 0 18px 18px;
+    }
+    .evidence h3 { font-size: 1rem; }
+    .evidence .repo-links {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .evidence .repo-links a {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      color: var(--accent);
+      text-decoration: none;
+      word-break: break-word;
+    }
+    .evidence .repo-links a:hover { text-decoration: underline; }
+    .evidence .small-note {
+      font-size: 0.92rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .evidence .log-list {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .evidence .log-list li + li { margin-top: 8px; }
+
+    .status-line {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #f1f5f9;
+      color: #22334a;
+      line-height: 1.45;
+      min-height: 56px;
+    }
+
+    footer {
+      margin-top: 18px;
+      padding: 18px 10px 10px;
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 1.55;
       text-align: center;
-      padding: 50px 20px;
-      color: #666;
     }
 
-    .welcome-message h2 {
-      color: #667eea;
-      margin-bottom: 15px;
-      font-size: 28px;
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
-    .loading-matches {
-      text-align: center;
-      padding: 30px;
-      color: #666;
+    @media (max-width: 1120px) {
+      .hero,
+      .main-grid,
+      .intro-grid {
+        grid-template-columns: 1fr;
+      }
+      .evidence { position: static; }
     }
 
-    .loading-spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid #f0f0f0;
-      border-top: 4px solid #667eea;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 15px;
+    @media (max-width: 720px) {
+      .shell { padding: 12px; }
+      .truth-banner,
+      .panel,
+      .card { border-radius: 16px; }
+      .section,
+      .hero-copy { padding: 16px; }
+      .form-grid,
+      .profile-grid,
+      .followup-grid {
+        grid-template-columns: 1fr;
+      }
+      .truth-banner p { font-size: 0.94rem; }
+      .step-nav button,
+      .sample-buttons button,
+      .action-row button,
+      .approval-check button,
+      .mentor-card button {
+        width: 100%;
+        justify-content: center;
+      }
     }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Chat Section -->
-    <div class="chat-section">
-      <div class="header">
-        <h1>🧭 PivotConnect</h1>
-        <div class="tagline">AI-Powered Mentor Matching for Entrepreneurs</div>
-      </div>
+  <a class="skip-link" href="#main">Skip to demo content</a>
 
-      <div class="chat-container" id="chatContainer">
-        <div class="welcome-message">
-          <h2>Welcome to PivotConnect</h2>
-          <p>Tell me about your business, and I'll connect you with seasoned mentors who've been exactly where you are.</p>
+  <div class="shell">
+    <header class="truth-banner" role="banner" aria-label="Truth banner">
+      <div class="truth-banner__top">
+        <h1>PivotConnect Judge Demo — interactive product prototype</h1>
+        <div class="badge" aria-label="Prototype status badge"><strong>Static</strong> no live Gemini or live mentor data</div>
+      </div>
+      <p>
+        This page is intentionally deterministic and judge-facing. Founder profiles, mentor matches, scores, messages,
+        scheduling, and outcomes are representative synthetic data. The page never implies production users,
+        live inference, or real outcomes.
+      </p>
+      <div class="banner-badges" aria-label="Truth labels">
+        <span class="badge">Synthetic / representative demo data</span>
+        <span class="badge">Human approval gate before intro</span>
+        <span class="badge">Keyboard-accessible controls</span>
+        <span class="badge">Reduced-motion aware</span>
+      </div>
+    </header>
+
+    <section class="card" aria-labelledby="overview-title">
+      <div class="section intro-grid">
+        <div class="hero-copy">
+          <span class="eyebrow">Judge-facing walkthrough</span>
+          <h2 id="overview-title">A clear, evidence-aware demo of how AI could coordinate mentorship access without pretending the demo is live AI.</h2>
+          <p class="lede">
+            The flow below is the same every time: a founder provides a synthetic intake, the demo shows explainable mentor
+            candidates with caveats, a human approves the represented introduction, and the follow-up view shows a prepared
+            meeting path. All of that is label-safe and reviewable offline.
+          </p>
+          <div class="truth-note">
+            <strong>Truth note:</strong> this is an interactive product prototype. It is designed to help judges inspect the workflow,
+            not to claim production users, live mentors, or live Gemini inference.
+          </div>
+          <nav class="step-nav" aria-label="Demo sections">
+            <button type="button" data-step="1" aria-current="step">1. Founder intake</button>
+            <button type="button" data-step="2">2. Mentor candidates</button>
+            <button type="button" data-step="3">3. Detail + approval</button>
+            <button type="button" data-step="4">4. Prep + evidence</button>
+          </nav>
+        </div>
+
+        <div class="summary-stack" aria-label="Quick summary">
+          <div class="summary-box">
+            <h3>What this page demonstrates</h3>
+            <ul>
+              <li>A deterministic intake-to-introduction mentor flow.</li>
+              <li>Explainable candidate ranking with visible caveats.</li>
+              <li>A human approval gate before the represented intro.</li>
+              <li>Evidence labels separating built, tested, simulated, and planned work.</li>
+            </ul>
+          </div>
+          <div class="summary-box">
+            <h3>What this page does not demonstrate</h3>
+            <ul>
+              <li>No live Gemini calls.</li>
+              <li>No real users or mentor inventory.</li>
+              <li>No production deployment or outcomes.</li>
+              <li>No traction, cost, staffing, or impact claims.</li>
+            </ul>
+          </div>
         </div>
       </div>
+    </section>
 
-      <div class="input-area">
-        <input 
-          type="text" 
-          id="userInput" 
-          placeholder="Click 'Send' to start the demo..."
-          readonly
-        />
-        <button id="sendButton" onclick="sendMessage()">Send</button>
-        <span class="demo-status" id="demoStatus">Step 1/4</span>
-      </div>
-    </div>
+    <main id="main" class="main-grid">
+      <div>
+        <section class="panel" id="intake-panel" aria-labelledby="intake-title">
+          <header>
+            <span class="eyebrow">Step 1 • founder intake</span>
+            <h2 id="intake-title">Create a synthetic founder profile</h2>
+            <p>Type a short founder description or load a sample. The demo uses deterministic rules to map the intake into a structured profile.</p>
+          </header>
+          <div class="section">
+            <form id="intake-form">
+              <div class="field wide">
+                <label for="founder-text">Founder description</label>
+                <small>Use this box to describe the founder’s business, stage, and needs. The text is treated as synthetic demo input.</small>
+                <textarea id="founder-text" name="founder-text" aria-describedby="founder-help">A first-time founder wants to build a sustainable fashion brand with a $15K launch budget, no industry experience, and a need for help with pricing, suppliers, and first customers.</textarea>
+                <div id="founder-help" class="sr-only">Synthetic founder description used to generate the deterministic profile.</div>
+              </div>
 
-    <!-- Mentor Matches Sidebar -->
-    <div class="sidebar">
-      <div class="sidebar-header">
-        <h2>Mentor Matches</h2>
-        <p>AI-curated based on your needs</p>
+              <div class="form-grid" aria-label="Structured intake fields">
+                <div class="field">
+                  <label for="stage">Stage</label>
+                  <select id="stage">
+                    <option value="idea">Idea / concept</option>
+                    <option value="prototype">Prototype / validation</option>
+                    <option value="launch">Preparing to launch</option>
+                    <option value="operating">Operating and learning</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="domain">Primary domain</label>
+                  <input id="domain" type="text" value="Consumer brand" />
+                </div>
+                <div class="field">
+                  <label for="budget">Budget constraint</label>
+                  <input id="budget" type="text" value="$15K representative launch budget" />
+                </div>
+                <div class="field">
+                  <label for="time-horizon">Support horizon</label>
+                  <select id="time-horizon">
+                    <option value="intro">First introduction only</option>
+                    <option value="month">30-day guidance</option>
+                    <option value="quarter">12-week mentorship cycle</option>
+                  </select>
+                </div>
+                <div class="field wide">
+                  <label for="needs">Support needs</label>
+                  <input id="needs" type="text" value="Pricing, suppliers, customer discovery, and first sales" />
+                </div>
+              </div>
+
+              <div class="sample-buttons" aria-label="Load sample founder profiles">
+                <button type="button" data-sample="fashion">Load fashion sample</button>
+                <button type="button" data-sample="food">Load food sample</button>
+                <button type="button" data-sample="software">Load software sample</button>
+              </div>
+
+              <div class="action-row">
+                <button class="primary" type="submit">Update profile</button>
+                <button type="button" id="reset-btn">Reset to default sample</button>
+              </div>
+            </form>
+
+            <div class="profile-grid" aria-label="Derived founder profile">
+              <div class="stat">
+                <div class="label">Structured profile</div>
+                <div class="value" id="profile-summary">Consumer brand founder with early-stage launch needs.</div>
+              </div>
+              <div class="stat">
+                <div class="label">Derived tags</div>
+                <div class="value" id="profile-tags">fashion • pricing • suppliers • first customers</div>
+              </div>
+              <div class="stat">
+                <div class="label">Demo caveat</div>
+                <div class="value">Rule-based parsing keeps this walkthrough deterministic and offline.</div>
+              </div>
+            </div>
+
+            <div class="status-line" id="status-line" role="status" aria-live="polite">
+              Loaded default synthetic founder profile. No model or network call has been made.
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="candidates-panel" aria-labelledby="candidates-title">
+          <header>
+            <span class="eyebrow">Step 2 • explainable mentor candidates</span>
+            <h2 id="candidates-title">Ranked candidates with visible reasons and caveats</h2>
+            <p>Compatibility is shown as a deterministic heuristic from the synthetic intake. Scores are not claims of a live model or a live mentor database.</p>
+          </header>
+          <div class="section">
+            <div id="mentor-list" class="mentor-list" role="list" aria-label="Mentor candidates"></div>
+          </div>
+        </section>
+
+        <section class="panel" id="detail-panel" aria-labelledby="detail-title">
+          <header>
+            <span class="eyebrow">Step 3 • mentor detail and human approval</span>
+            <h2 id="detail-title">Mentor detail before any represented intro</h2>
+            <p>The intro is locked until a human acknowledges the synthetic nature of the demo and explicitly approves the represented share.</p>
+          </header>
+          <div class="section detail">
+            <div class="detail-box" id="mentor-detail" aria-live="polite">
+              <div class="title-row">
+                <div>
+                  <h3 id="mentor-detail-name">Margaret Chen</h3>
+                  <div class="mentor-role" id="mentor-detail-role">Former retail CEO • consumer brand operator • stage-minded advisor</div>
+                </div>
+                <div class="score-pill" id="mentor-detail-score">96 / 100</div>
+              </div>
+              <p id="mentor-detail-summary" class="why">Strong match because the intake asks for pricing, suppliers, and first customers in a consumer-brand context.</p>
+              <div class="mentor-tags" id="mentor-detail-tags" aria-label="Selected mentor tags">
+                <span class="tag">consumer brands</span>
+                <span class="tag">pricing discipline</span>
+                <span class="tag">retail launch</span>
+              </div>
+              <div class="callout" id="mentor-detail-caveat">
+                Caveat: this is a representative demo profile. It does not point to a live person, a live calendar, or a live introduction system.
+              </div>
+              <ul id="mentor-detail-reasons">
+                <li>Matches the founder’s business category.</li>
+                <li>Has visible stage experience for early launch decisions.</li>
+                <li>Can explain tradeoffs in pricing and customer acquisition.</li>
+              </ul>
+            </div>
+
+            <div class="approval-box">
+              <strong>Human approval gate</strong>
+              <p id="approval-copy">The represented intro remains hidden until the approval checkbox is set and the button is pressed.</p>
+              <div class="approval-check">
+                <label style="display:flex; gap:10px; align-items:flex-start; line-height:1.45; color:#24533b;">
+                  <input id="approval-checkbox" type="checkbox" />
+                  <span>I understand this is a synthetic, representative demo and I approve the represented intro.</span>
+                </label>
+                <button type="button" id="approve-btn" class="primary" disabled>Approve represented intro</button>
+              </div>
+            </div>
+
+            <div class="detail-box" id="intro-box" hidden>
+              <div class="title-row">
+                <h3 style="margin:0;">Represented intro</h3>
+                <span class="score-pill" style="background:#eaf8f0;color:#1f7a4d;">Visible only after approval</span>
+              </div>
+              <p id="intro-text" class="why" style="margin-top:8px;">
+                Hi Margaret — this is a representative introduction for a founder seeking help with pricing, suppliers, and first customers. The founder profile remains synthetic in this demo.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="followup-panel" aria-labelledby="followup-title">
+          <header>
+            <span class="eyebrow">Step 4 • preparation and follow-up</span>
+            <h2 id="followup-title">Meeting prep, follow-up, and evidence summary</h2>
+            <p>Once the intro is approved, the demo shows the next step: a prepared first meeting and a simple follow-up cadence. The content stays synthetic and readable.</p>
+          </header>
+          <div class="section">
+            <div class="followup-grid">
+              <div class="checklist">
+                <h4>Preparation checklist</h4>
+                <ul>
+                  <li>Clarify the founder’s goal for the first 30 minutes.</li>
+                  <li>Confirm which topics are in scope for the meeting.</li>
+                  <li>Prepare 3 guiding questions and 2 tradeoff prompts.</li>
+                  <li>Capture one next action and one follow-up date.</li>
+                </ul>
+              </div>
+              <div class="checklist">
+                <h4>Follow-up cadence</h4>
+                <ul>
+                  <li>Send a short recap after the meeting.</li>
+                  <li>Track one milestone per week for 12 weeks.</li>
+                  <li>Keep the founder in control of any personal sharing.</li>
+                  <li>Record overrides and reasons for later review.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="callout">
+              This page stays aligned with the evidence-first judge package: it shows the prototype workflow, but it does not claim production users, live matching, or verified impact.
+            </div>
+          </div>
+        </section>
       </div>
-      <div class="matches-container" id="matchesContainer">
-        <div class="loading-matches" id="loadingState" style="display: none;">
-          <div class="loading-spinner"></div>
-          <p>Finding your perfect mentors...</p>
-        </div>
-      </div>
-    </div>
+
+      <aside class="evidence" aria-label="Evidence panel">
+        <section class="panel" aria-labelledby="legend-title">
+          <header>
+            <span class="eyebrow">What is real?</span>
+            <h2 id="legend-title">Four-category evidence legend</h2>
+            <p>Clear labels help judges separate verified evidence from tested code, simulated UI, and future work.</p>
+          </header>
+          <div class="panel-body">
+            <div class="legend-grid">
+              <div class="legend-card">
+                <h4><span class="chip">1</span> Verified evidence</h4>
+                <p>Public artifacts that can be inspected independently.</p>
+                <div class="repo-links">
+                  <a href="https://github.com/bdpivot/pivotconnect-xprize" target="_blank" rel="noreferrer noopener">Public repository: github.com/bdpivot/pivotconnect-xprize</a>
+                  <a href="https://bdpivot.github.io/pivotconnect-xprize/" target="_blank" rel="noreferrer noopener">Public prototype: bdpivot.github.io/pivotconnect-xprize/</a>
+                </div>
+              </div>
+
+              <div class="legend-card">
+                <h4><span class="chip">2</span> Implemented / tested code</h4>
+                <p>Source and development logs showing actual testing of selected capabilities.</p>
+                <ul class="log-list">
+                  <li><code>launchpad-ai/src/api/server.js</code> and <code>src/config/index.js</code> define the API structure and model identifiers.</li>
+                  <li><code>launchpad-ai/Product_Evidence/logs/run-20260731-220300.log</code> records successful Gemini 2.5 Pro/Flash development calls.</li>
+                  <li><code>launchpad-ai/Product_Evidence/logs/advanced-features-2026-08-01T15-54-28-283Z.log</code> records Code Execution and Search Grounding tests.</li>
+                </ul>
+              </div>
+
+              <div class="legend-card">
+                <h4><span class="chip">3</span> Prototype simulation</h4>
+                <p>The judge walkthrough shown here is a deterministic, synthetic interaction path.</p>
+                <ul>
+                  <li>Founder intake is rule-based and offline.</li>
+                  <li>Mentor scores are explanatory heuristics for this demo.</li>
+                  <li>Introductions, scheduling, and follow-up are representative UI states only.</li>
+                </ul>
+              </div>
+
+              <div class="legend-card">
+                <h4><span class="chip">4</span> Planned</h4>
+                <p>Important work that remains to be verified before any real pilot.</p>
+                <ul>
+                  <li>Consent workflows and production governance.</li>
+                  <li>Real mentor directory and scheduling integration.</li>
+                  <li>Accessibility, privacy, and security validation.</li>
+                  <li>Measured outcomes with actual participants.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="evidence-title">
+          <header>
+            <span class="eyebrow">Evidence panel</span>
+            <h2 id="evidence-title">Links and log notes</h2>
+            <p>These references keep the demo grounded in the judge package.</p>
+          </header>
+          <div class="panel-body">
+            <div class="summary-box" style="margin-bottom:12px;">
+              <h3>Direct links</h3>
+              <div class="repo-links">
+                <a href="https://github.com/bdpivot/pivotconnect-xprize" target="_blank" rel="noreferrer noopener">GitHub repository</a>
+                <a href="https://bdpivot.github.io/pivotconnect-xprize/" target="_blank" rel="noreferrer noopener">GitHub Pages prototype</a>
+              </div>
+            </div>
+            <div class="summary-box" style="margin-bottom:12px;">
+              <h3>Log summary</h3>
+              <ul class="log-list">
+                <li><strong>Successful tests:</strong> Gemini 2.5 Pro/Flash calls, Code Execution, Search Grounding.</li>
+                <li><strong>Honest record:</strong> failed runs remain part of the evidence trail and are not hidden.</li>
+                <li><strong>Scope:</strong> logs support capability claims only; they do not prove production readiness or impact.</li>
+              </ul>
+            </div>
+            <div class="summary-box">
+              <h3>Demo boundary</h3>
+              <p class="small-note">
+                The page never states or implies live AI inference, real mentor identity, production scheduling, verified participant counts, revenue, staffing, partnerships, deployment, or impact results.
+              </p>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <footer>
+      Built as a deterministic judge prototype for PivotConnect. All names, scores, mentor identities, messages, and outcomes shown on this page are synthetic or representative.
+    </footer>
   </div>
 
   <script>
-    const chatContainer = document.getElementById('chatContainer');
-    const matchesContainer = document.getElementById('matchesContainer');
-    const loadingState = document.getElementById('loadingState');
-    const userInput = document.getElementById('userInput');
-    const sendButton = document.getElementById('sendButton');
-    const demoStatus = document.getElementById('demoStatus');
+    const samples = {
+      fashion: {
+        text: 'A first-time founder wants to build a sustainable fashion brand with a $15K launch budget, no industry experience, and a need for help with pricing, suppliers, and first customers.',
+        stage: 'idea',
+        domain: 'Consumer brand',
+        budget: '$15K representative launch budget',
+        timeHorizon: 'quarter',
+        needs: 'Pricing, suppliers, customer discovery, and first sales'
+      },
+      food: {
+        text: 'A food entrepreneur wants to open a community bakery, manage inventory, and understand margin discipline before launching.',
+        stage: 'prototype',
+        domain: 'Food and retail',
+        budget: '$25K representative launch budget',
+        timeHorizon: 'month',
+        needs: 'Operations, inventory, margins, and launch planning'
+      },
+      software: {
+        text: 'A solo founder is building a B2B software service and needs help with customer discovery, pricing, and a simple go-to-market plan.',
+        stage: 'launch',
+        domain: 'B2B software',
+        budget: '$10K representative launch budget',
+        timeHorizon: 'intro',
+        needs: 'Customer discovery, pricing, and go-to-market'
+      }
+    };
 
-    // Demo mentor database
-    const mentors = [
+    const mentorPool = [
       {
-        name: "Margaret Chen",
-        title: "Former CEO, EcoTextiles Inc.",
-        expertise: ["Sustainable Fashion", "Supply Chain", "B2B Sales", "Scaling"],
-        availability: "2 hours/month",
-        matchScore: 96,
-        reason: "Built a $50M sustainable textile company from scratch. Deep expertise in eco-friendly manufacturing and ethical supply chains."
+        id: 'margaret',
+        name: 'Margaret Chen',
+        role: 'Former retail CEO • consumer brand operator',
+        focus: ['consumer brand', 'pricing', 'suppliers', 'retail', 'fashion'],
+        tags: ['consumer brands', 'pricing discipline', 'retail launch'],
+        description: 'Strong on launch sequencing, margin discipline, and the realities of first product sales.',
+        caveat: 'Representative profile only; no live person or calendar is connected to this page.'
       },
       {
-        name: "James Morrison",
-        title: "Retired CFO, Fashion Brands Group",
-        expertise: ["Financial Modeling", "Fundraising", "Fashion Industry", "Growth Strategy"],
-        availability: "4 hours/month",
-        matchScore: 92,
-        reason: "Led fundraising for 3 fashion startups that reached $10M+ revenue. Expert in fashion industry financial planning."
+        id: 'ahmed',
+        name: 'Ahmed Patel',
+        role: 'Operations leader • food and local commerce',
+        focus: ['food', 'operations', 'inventory', 'margin', 'retail'],
+        tags: ['operations', 'inventory', 'margin control'],
+        description: 'Best when the founder needs practical help with operating rhythm, inventory, and cost control.',
+        caveat: 'This is a synthetic mentor record used for demo review only.'
       },
       {
-        name: "Sarah Patel",
-        title: "Former VP Marketing, Patagonia",
-        expertise: ["Brand Strategy", "Sustainability Marketing", "DTC", "Community Building"],
-        availability: "3 hours/month",
-        matchScore: 89,
-        reason: "Built authentic sustainable fashion brands. Knows how to connect with conscious consumers and tell compelling stories."
+        id: 'lina',
+        name: 'Lina Morales',
+        role: 'B2B software founder mentor • customer discovery coach',
+        focus: ['software', 'customer discovery', 'pricing', 'go-to-market', 'platform'],
+        tags: ['customer discovery', 'pricing', 'go-to-market'],
+        description: 'Useful for founders who need a simple growth experiment plan and early buyer feedback.',
+        caveat: 'Compatibility is rule-based and explanatory, not a live model output.'
       },
       {
-        name: "Robert Davidson",
-        title: "Serial Entrepreneur, 4 exits",
-        expertise: ["E-commerce", "Operations", "Lean Startup", "Fashion Retail"],
-        availability: "2 hours/month",
-        matchScore: 87,
-        reason: "Founded and sold 2 fashion e-commerce companies. Understands the challenges of starting lean and scaling profitably."
+        id: 'owen',
+        name: 'Owen Williams',
+        role: 'Community builder • first-time founder support',
+        focus: ['first-time', 'launch', 'strategy', 'customer discovery', 'planning'],
+        tags: ['first-time founder', 'launch planning', 'supportive coaching'],
+        description: 'Helpful for early-stage founders who need encouragement, structure, and accountable milestones.',
+        caveat: 'No real mentor inventory is queried; the demo stays deterministic offline.'
       }
     ];
 
-    // Demo conversation
-    const demoScript = [
-      {
-        role: 'user',
-        content: 'I want to start a sustainable fashion business selling eco-friendly basics online. I have $15K to start, but no industry experience.'
-      },
-      {
-        role: 'agent',
-        agent: 'Compass',
-        emoji: '🧭',
-        content: 'Great! Let me understand your needs better.\n\nYou\'re entering sustainable fashion with:\n• Limited capital ($15K)\n• E-commerce focus\n• Need for industry guidance\n\nI\'m analyzing our mentor network for the best matches. Looking for mentors with:\n\n✓ Sustainable fashion experience\n✓ E-commerce expertise\n✓ Experience with bootstrapped startups\n✓ Availability to support early-stage founders\n\nSearching through 247 mentors in our network...',
-        showMatches: true
-      },
-      {
-        role: 'agent',
-        agent: 'Compass',
-        emoji: '🧭',
-        content: '**Found 4 exceptional matches!**\n\nI\'ve identified mentors who:\n• Built sustainable fashion businesses from scratch\n• Understand your capital constraints\n• Have real e-commerce scaling experience\n• Are actively mentoring right now\n\nCheck the matches on the right. Each mentor has walked a similar path and can help you avoid costly mistakes.\n\n**Top recommendation: Margaret Chen** (96% match)\nFormer CEO of EcoTextiles — she literally wrote the book on sustainable fashion manufacturing with limited capital.'
-      },
-      {
-        role: 'user',
-        content: 'This is incredible! How do I connect with Margaret?'
-      },
-      {
-        role: 'agent',
-        agent: 'Compass',
-        emoji: '🧭',
-        content: '**Here\'s how it works:**\n\n1. **Review her profile** - Watch her intro video and read about her journey\n2. **Submit a connection request** - Tell her why you\'re excited to learn from her\n3. **AI-assisted introduction** - I\'ll craft a compelling intro based on your goals and her expertise\n4. **Schedule first session** - Once she accepts, book a 60-min initial mentorship call\n\nI\'ve pulled up Margaret\'s full profile on the right — take a look at her story and intro video.',
-        sidebar: 'profile'
-      },
-      {
-        role: 'user',
-        content: 'Her intro video is great. Yes, please draft the intro for me.'
-      },
-      {
-        role: 'agent',
-        agent: 'Compass',
-        emoji: '🧭',
-        content: 'Done! I\'ve drafted a personalized introduction based on your goals and Margaret\'s background. Review it on the right and edit anything before sending.\n\nI highlighted the shared ground: bootstrapped launches, sustainable supply chains, and your eco-friendly basics focus.',
-        sidebar: 'intro'
-      },
-      {
-        role: 'user',
-        content: 'Looks perfect. Send it to Margaret!'
-      },
-      {
-        role: 'agent',
-        agent: 'Compass',
-        emoji: '🧭',
-        content: 'Request sent! ✓\n\nGreat news — **Margaret accepted your request!** She\'s excited to help. Let\'s get your first session on the calendar. Her open times are on the right.',
-        sidebar: 'schedule'
-      },
-      {
-        role: 'user',
-        content: 'Tuesday at 2:00 PM works great.'
-      },
-      {
-        role: 'agent',
-        agent: 'Compass',
-        emoji: '🧭',
-        content: '**You\'re all set!** 🎉\n\nYour first mentorship session with Margaret Chen is confirmed for **Tuesday at 2:00 PM ET**. Calendar invites are on the way.\n\nI\'ve prepared a session agenda so you make the most of your hour — see the checklist on the right.',
-        sidebar: 'confirmed'
-      },
-      {
-        role: 'user',
-        content: 'This is amazing. What happens after our first call?'
-      },
-      {
-        role: 'agent',
-        agent: 'Compass',
-        emoji: '🧭',
-        content: 'This is where the real magic happens. PivotConnect isn\'t a one-off intro — it\'s a structured relationship.\n\nYour mentorship dashboard on the right tracks goals, action items, and milestones. I\'ll check in between sessions, surface relevant resources, and keep you both accountable.\n\n**Margaret\'s wisdom + your drive + AI keeping it on track. That\'s how businesses get built.** 🚀',
-        sidebar: 'dashboard'
+    const state = {
+      sample: 'fashion',
+      selectedMentorId: 'margaret',
+      approved: false,
+      profile: {
+        summary: 'Consumer brand founder with early-stage launch needs.',
+        tags: ['fashion', 'pricing', 'suppliers', 'first customers']
       }
-    ];
+    };
 
-    let currentStep = 0;
-    const totalUserSteps = demoScript.filter(m => m.role === 'user').length;
+    const $ = (id) => document.getElementById(id);
+    const foundersText = $('founder-text');
+    const stage = $('stage');
+    const domain = $('domain');
+    const budget = $('budget');
+    const timeHorizon = $('time-horizon');
+    const needs = $('needs');
+    const statusLine = $('status-line');
+    const profileSummary = $('profile-summary');
+    const profileTags = $('profile-tags');
+    const mentorList = $('mentor-list');
+    const mentorDetailName = $('mentor-detail-name');
+    const mentorDetailRole = $('mentor-detail-role');
+    const mentorDetailScore = $('mentor-detail-score');
+    const mentorDetailSummary = $('mentor-detail-summary');
+    const mentorDetailTags = $('mentor-detail-tags');
+    const mentorDetailReasons = $('mentor-detail-reasons');
+    const mentorDetailCaveat = $('mentor-detail-caveat');
+    const approvalCheckbox = $('approval-checkbox');
+    const approveBtn = $('approve-btn');
+    const introBox = $('intro-box');
+    const introText = $('intro-text');
 
-    function updateStatus() {
-      const userStepsSoFar = demoScript.slice(0, currentStep + 1).filter(m => m.role === 'user').length;
-      if (currentStep >= demoScript.length) {
-        demoStatus.textContent = 'Demo Complete! ✓';
-        sendButton.textContent = 'Restart';
-        sendButton.onclick = () => location.reload();
-      } else {
-        demoStatus.textContent = `Step ${userStepsSoFar}/${totalUserSteps}`;
-      }
+    function normalize(text) {
+      return text.toLowerCase();
     }
 
-    function clearWelcome() {
-      const welcome = chatContainer.querySelector('.welcome-message');
-      if (welcome) welcome.remove();
-    }
+    function deriveProfileFromText(text) {
+      const lower = normalize(text);
+      const tags = [];
+      let summary = 'Early-stage founder with general mentorship needs.';
+      let label = 'general';
 
-    function addMessage(message) {
-      clearWelcome();
+      const add = (tag) => { if (!tags.includes(tag)) tags.push(tag); };
 
-      const messageDiv = document.createElement('div');
-      messageDiv.className = `message ${message.role}`;
+      if (lower.includes('fashion') || lower.includes('apparel') || lower.includes('brand')) {
+        label = 'consumer brand';
+        summary = 'Consumer brand founder with early-stage launch needs.';
+        add('fashion'); add('pricing'); add('suppliers'); add('first customers');
+      }
+      if (lower.includes('food') || lower.includes('bakery') || lower.includes('restaurant')) {
+        label = 'food and retail';
+        summary = 'Food or retail founder focused on operational discipline.';
+        add('food'); add('operations'); add('inventory'); add('margin');
+      }
+      if (lower.includes('software') || lower.includes('saas') || lower.includes('platform')) {
+        label = 'B2B software';
+        summary = 'Software founder seeking customer discovery and pricing help.';
+        add('software'); add('customer discovery'); add('pricing'); add('go-to-market');
+      }
+      if (lower.includes('first-time') || lower.includes('first time') || lower.includes('new founder')) {
+        add('first-time founder');
+      }
+      if (lower.includes('mentor')) add('mentorship');
+      if (lower.includes('budget') || lower.includes('$')) add('budget discipline');
+      if (lower.includes('supplier')) add('suppliers');
+      if (lower.includes('customer')) add('customer discovery');
+      if (lower.includes('sales')) add('sales');
+      if (lower.includes('pricing')) add('pricing');
 
-      if (message.role === 'user') {
-        messageDiv.innerHTML = `
-          <div class="content">${message.content}</div>
-          <div class="avatar">👤</div>
-        `;
-      } else {
-        messageDiv.innerHTML = `
-          <div class="avatar">${message.emoji}</div>
-          <div class="content">
-            <div class="agent-name">${message.emoji} ${message.agent}</div>
-            ${message.content.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}
-          </div>
-        `;
+      if (!tags.length) {
+        add('founder intake');
+        add('structured profile');
       }
 
-      chatContainer.appendChild(messageDiv);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-
-      // Show matches after Compass starts searching
-      if (message.showMatches) {
-        setTimeout(showMatches, 1500);
-      }
-
-      // Advance the sidebar through richer stages
-      if (message.sidebar) {
-        setTimeout(() => renderSidebar(message.sidebar), 600);
-      }
+      return { label, summary, tags };
     }
 
-    function setSidebarHeader(title, subtitle) {
-      const header = document.querySelector('.sidebar-header');
-      header.innerHTML = `<h2>${title}</h2><p>${subtitle}</p>`;
+    function mentorScore(mentor, profile) {
+      const text = `${profile.summary} ${profile.tags.join(' ')}`.toLowerCase();
+      const matches = mentor.focus.filter((item) => text.includes(item.toLowerCase()));
+      const score = Math.min(98, 56 + (matches.length * 11) + (mentor.tags.length * 2));
+      return { score, matches };
     }
 
-    function playMentorVideo() {
-      const video = document.getElementById('mentorVideo');
-      const avatar = document.getElementById('videoAvatar');
-      const playBtn = document.getElementById('playBtn');
-      const caption = document.querySelector('#videoThumb .video-caption');
-      const lowerThird = document.getElementById('lowerThird');
-      if (!video) return;
-      video.classList.add('playing');
-      if (avatar) avatar.style.display = 'none';
-      if (playBtn) playBtn.style.display = 'none';
-      if (caption) caption.style.display = 'none';
-      video.currentTime = 0;
-      video.play();
-      // Reveal lower-third caption shortly after playback begins
-      setTimeout(() => { if (lowerThird) lowerThird.classList.add('show'); }, 500);
-      video.onended = () => {
-        if (lowerThird) lowerThird.classList.remove('show');
-        if (caption) caption.style.display = '';
-        if (playBtn) {
-          playBtn.style.display = 'flex';
-          playBtn.textContent = '↻';
-        }
-      };
+    function reasonsFor(mentor, profile, matches) {
+      const reasons = [];
+      if (matches.length) reasons.push(`Matches: ${matches.slice(0, 3).join(', ')}.`);
+      if (profile.summary.toLowerCase().includes('consumer') && mentor.focus.includes('consumer brand')) reasons.push('Strong fit for consumer-brand launch questions.');
+      if (profile.summary.toLowerCase().includes('food') && mentor.focus.includes('operations')) reasons.push('Useful for inventory and margin decisions.');
+      if (profile.summary.toLowerCase().includes('software') && mentor.focus.includes('customer discovery')) reasons.push('Helpful for buyer interviews and pricing experiments.');
+      if (profile.tags.includes('first-time founder')) reasons.push('Supports a first-time founder who needs structure and accountability.');
+      if (!reasons.length) reasons.push('Clear explanatory overlap with the structured intake.');
+      return reasons;
     }
 
-    function renderSidebar(stage) {
-      if (stage === 'profile') {
-        setSidebarHeader('Mentor Profile', 'Margaret Chen — 96% match');
-        matchesContainer.innerHTML = `
-          <div class="stage-card profile-card">
-            <div class="video-thumb" id="videoThumb" onclick="playMentorVideo()">
-              <video id="mentorVideo" class="mentor-video" src="assets/margaret-intro.mp4" playsinline preload="metadata"></video>
-              <div class="video-avatar" id="videoAvatar">MC</div>
-              <div class="play-btn" id="playBtn">▶</div>
-              <div class="video-caption">Intro video • 0:06</div>
-              <div class="lower-third" id="lowerThird">
-                <div class="lt-name">Margaret Chen</div>
-                <div class="lt-title">Former CEO, EcoTextiles Inc.</div>
-              </div>
-            </div>
-            <div class="profile-name">Margaret Chen</div>
-            <div class="profile-title">Former CEO, EcoTextiles Inc. • 35 yrs</div>
-            <div class="profile-stats">
-              <div class="pstat"><div class="pstat-num">$50M</div><div class="pstat-label">Company built</div></div>
-              <div class="pstat"><div class="pstat-num">18</div><div class="pstat-label">Founders mentored</div></div>
-              <div class="pstat"><div class="pstat-num">4.9★</div><div class="pstat-label">Mentee rating</div></div>
-            </div>
-            <div class="profile-bio">“I bootstrapped EcoTextiles with $20K and a sewing machine. I know the sleep-less nights of ethical sourcing on a budget — and I\'d love to help you skip the mistakes I made.”</div>
-            <div class="mentor-expertise">
-              <span class="expertise-tag">Sustainable Fashion</span>
-              <span class="expertise-tag">Supply Chain</span>
-              <span class="expertise-tag">B2B Sales</span>
-              <span class="expertise-tag">Scaling</span>
-            </div>
-            <div class="mentor-availability">✓ Available: 2 hours/month</div>
-          </div>`;
-      } else if (stage === 'intro') {
-        setSidebarHeader('AI-Drafted Introduction', 'Personalized — edit before sending');
-        matchesContainer.innerHTML = `
-          <div class="stage-card">
-            <div class="stage-label">To: Margaret Chen</div>
-            <div class="intro-draft">
-              <p>Hi Margaret,</p>
-              <p>I\'m launching a sustainable fashion brand focused on <span class="hl">eco-friendly basics</span>, starting lean with about $15K. Your journey building <span class="hl">EcoTextiles from the ground up</span> — especially navigating ethical supply chains on a tight budget — is exactly the path I\'m trying to walk.</p>
-              <p>I\'d be honored to learn from you, even a couple of hours a month. I\'m coachable, I do the homework, and I move fast.</p>
-              <p>Thank you for considering,<br>Sarah</p>
-            </div>
-            <div class="ai-note">✨ Compass matched your goals to Margaret\'s expertise in supply chain &amp; bootstrapped scaling.</div>
-          </div>`;
-      } else if (stage === 'schedule') {
-        setSidebarHeader('Schedule First Session', 'Margaret accepted — pick a time');
-        matchesContainer.innerHTML = `
-          <div class="stage-card accepted">
-            <div class="accepted-badge">✓ Margaret accepted your request</div>
-            <div class="mentor-name">Margaret Chen</div>
-            <div class="mentor-title">60-minute intro session</div>
-          </div>
-          <div class="slot-grid">
-            <div class="slot">Mon 10:00 AM</div>
-            <div class="slot slot-selected">Tue 2:00 PM</div>
-            <div class="slot">Wed 11:00 AM</div>
-            <div class="slot">Thu 4:00 PM</div>
-          </div>`;
-      } else if (stage === 'confirmed') {
-        setSidebarHeader('Session Confirmed', 'Tuesday 2:00 PM ET');
-        matchesContainer.innerHTML = `
-          <div class="stage-card confirmed">
-            <div class="accepted-badge">📅 Confirmed — Tue 2:00 PM ET</div>
-            <div class="mentor-name">with Margaret Chen</div>
-            <div class="mentor-title">Video call • invites sent</div>
-          </div>
-          <div class="agenda-title">Your prep checklist</div>
-          <div class="agenda-item">☐ Share your one-page business concept</div>
-          <div class="agenda-item">☐ List your top 3 questions</div>
-          <div class="agenda-item">☐ Draft your target customer profile</div>
-          <div class="agenda-item">☐ Note your $15K budget breakdown</div>`;
-      } else if (stage === 'dashboard') {
-        setSidebarHeader('Mentorship Dashboard', 'Sarah × Margaret — active');
-        matchesContainer.innerHTML = `
-          <div class="dash-metrics">
-            <div class="metric"><div class="metric-num">1</div><div class="metric-label">Session booked</div></div>
-            <div class="metric"><div class="metric-num">4</div><div class="metric-label">Goals set</div></div>
-            <div class="metric"><div class="metric-num">12</div><div class="metric-label">Week program</div></div>
-          </div>
-          <div class="agenda-title">Shared goals</div>
-          <div class="goal-item"><span class="goal-dot"></span>Validate 3 hero products</div>
-          <div class="goal-item"><span class="goal-dot"></span>Source ethical supplier</div>
-          <div class="goal-item"><span class="goal-dot"></span>Launch pre-order page</div>
-          <div class="ai-note">✨ Compass checks in weekly, surfaces resources, and keeps you both on track.</div>`;
-      }
+    function rankMentors() {
+      const profileText = `${state.profile.summary} ${state.profile.tags.join(' ')}`;
+      return mentorPool
+        .map((mentor) => {
+          const { score, matches } = mentorScore(mentor, { summary: state.profile.summary, tags: state.profile.tags });
+          return {
+            ...mentor,
+            score,
+            matches,
+            reasons: reasonsFor(mentor, { summary: state.profile.summary, tags: state.profile.tags }, matches)
+          };
+        })
+        .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
     }
 
-    function showMatches() {
-      loadingState.style.display = 'block';
-      
-      setTimeout(() => {
-        loadingState.style.display = 'none';
-        
-        mentors.forEach((mentor, index) => {
-          setTimeout(() => {
-            const card = document.createElement('div');
-            card.className = 'match-card';
-            card.innerHTML = `
-              <div class="match-score">${mentor.matchScore}% Match</div>
+    function updateStatus(message) {
+      statusLine.textContent = message;
+    }
+
+    function renderMentors() {
+      const ranked = rankMentors();
+      mentorList.innerHTML = '';
+
+      ranked.forEach((mentor, index) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'mentor-card';
+        btn.setAttribute('role', 'listitem');
+        btn.setAttribute('aria-pressed', String(mentor.id === state.selectedMentorId));
+        btn.innerHTML = `
+          <div class="mentor-card-top">
+            <div>
               <div class="mentor-name">${mentor.name}</div>
-              <div class="mentor-title">${mentor.title}</div>
-              <div class="mentor-expertise">
-                ${mentor.expertise.map(e => `<span class="expertise-tag">${e}</span>`).join('')}
-              </div>
-              <div class="mentor-availability">✓ Available: ${mentor.availability}</div>
-              <div class="match-reason">${mentor.reason}</div>
-            `;
-            matchesContainer.appendChild(card);
-          }, index * 300);
-        });
-      }, 2000);
+              <div class="mentor-role">${mentor.role}</div>
+            </div>
+            <div class="score-pill">${mentor.score} / 100</div>
+          </div>
+          <div class="why"><strong>Why shown:</strong> ${mentor.reasons.join(' ')}</div>
+          <div class="mentor-tags">${mentor.tags.map((tag) => `<span class="tag">${tag}</span>`).join('')}</div>
+          <div class="caveat"><strong>Caveat:</strong> ${mentor.caveat}</div>
+        `;
+        btn.addEventListener('click', () => selectMentor(mentor.id));
+        mentorList.appendChild(btn);
+      });
     }
 
-    function sendMessage() {
-      if (currentStep >= demoScript.length) {
-        return;
-      }
+    function renderDetail() {
+      const ranked = rankMentors();
+      const mentor = ranked.find((item) => item.id === state.selectedMentorId) || ranked[0];
+      if (!mentor) return;
 
-      // Disable button during animation
-      sendButton.disabled = true;
+      mentorDetailName.textContent = mentor.name;
+      mentorDetailRole.textContent = mentor.role;
+      mentorDetailScore.textContent = `${mentor.score} / 100`;
+      mentorDetailSummary.textContent = mentor.description;
+      mentorDetailTags.innerHTML = mentor.tags.map((tag) => `<span class="tag">${tag}</span>`).join('');
+      mentorDetailCaveat.textContent = mentor.caveat;
+      mentorDetailReasons.innerHTML = mentor.reasons.map((reason) => `<li>${reason}</li>`).join('');
+      introText.textContent = `Hi ${mentor.name.split(' ')[0]} — this is a representative introduction for a founder seeking help with ${state.profile.tags.slice(0, 3).join(', ')}. The founder profile remains synthetic in this demo.`;
 
-      const message = demoScript[currentStep];
-      
-      if (message.role === 'user') {
-        // Show user message
-        userInput.value = message.content;
-        
-        setTimeout(() => {
-          addMessage(message);
-          userInput.value = '';
-          currentStep++;
-          updateStatus();
-          
-          // Auto-trigger agent response
-          if (currentStep < demoScript.length && demoScript[currentStep].role === 'agent') {
-            setTimeout(sendMessage, 1500);
-          } else {
-            sendButton.disabled = false;
-          }
-        }, 500);
-      } else {
-        // Agent message
-        addMessage(message);
-        currentStep++;
-        updateStatus();
-        
-        // If next message is also agent, auto-continue
-        if (currentStep < demoScript.length && demoScript[currentStep].role === 'agent') {
-          setTimeout(sendMessage, 2000);
-        } else {
-          sendButton.disabled = false;
-        }
+      if (state.approved) {
+        introBox.hidden = false;
       }
     }
 
-    // Initialize
-    updateStatus();
+    function selectMentor(mentorId) {
+      state.selectedMentorId = mentorId;
+      state.approved = false;
+      approvalCheckbox.checked = false;
+      introBox.hidden = true;
+      approveBtn.disabled = true;
+      renderMentors();
+      renderDetail();
+      updateStatus(`Selected ${mentorPool.find((m) => m.id === mentorId)?.name || 'mentor'} for the synthetic review. No live data or network call was made.`);
+    }
+
+    function parseAndApplyForm() {
+      const derived = deriveProfileFromText(foundersText.value);
+      state.profile.summary = `${derived.label.charAt(0).toUpperCase()}${derived.label.slice(1)} founder with early-stage needs.`;
+      state.profile.tags = derived.tags;
+      profileSummary.textContent = derived.summary;
+      profileTags.textContent = derived.tags.join(' • ');
+      renderMentors();
+      renderDetail();
+      updateStatus(`Updated synthetic founder profile for a ${derived.label} scenario. The page remains deterministic and offline.`);
+    }
+
+    function loadSample(key) {
+      const sample = samples[key];
+      if (!sample) return;
+      foundersText.value = sample.text;
+      stage.value = sample.stage;
+      domain.value = sample.domain;
+      budget.value = sample.budget;
+      timeHorizon.value = sample.timeHorizon;
+      needs.value = sample.needs;
+      state.sample = key;
+      parseAndApplyForm();
+      const preferred = key === 'food' ? 'ahmed' : key === 'software' ? 'lina' : 'margaret';
+      selectMentor(preferred);
+      updateStatus(`Loaded ${key} sample. The demo now shows a corresponding synthetic mentor path.`);
+    }
+
+    function resetDefault() {
+      loadSample('fashion');
+    }
+
+    $('intake-form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      parseAndApplyForm();
+    });
+
+    $('reset-btn').addEventListener('click', resetDefault);
+
+    document.querySelectorAll('[data-sample]').forEach((button) => {
+      button.addEventListener('click', () => loadSample(button.dataset.sample));
+    });
+
+    approvalCheckbox.addEventListener('change', () => {
+      approveBtn.disabled = !approvalCheckbox.checked;
+      if (!approvalCheckbox.checked) {
+        state.approved = false;
+        introBox.hidden = true;
+      }
+    });
+
+    approveBtn.addEventListener('click', () => {
+      if (!approvalCheckbox.checked) return;
+      state.approved = true;
+      introBox.hidden = false;
+      updateStatus('Represented intro approved. Preparation and follow-up now appear, while the demo remains synthetic and non-live.');
+      document.getElementById('followup-panel').scrollIntoView({ block: 'start', behavior: 'smooth' });
+    });
+
+    document.querySelectorAll('.step-nav button').forEach((button) => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.step-nav button').forEach((btn) => btn.removeAttribute('aria-current'));
+        button.setAttribute('aria-current', 'step');
+        const step = button.dataset.step;
+        const target = step === '1' ? 'intake-panel' : step === '2' ? 'candidates-panel' : step === '3' ? 'detail-panel' : 'followup-panel';
+        document.getElementById(target).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // Initialize with the default synthetic founder profile.
+    parseAndApplyForm();
+    selectMentor('margaret');
   </script>
 </body>
 </html>

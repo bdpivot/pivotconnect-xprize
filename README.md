@@ -1,114 +1,95 @@
-# PivotConnect — AI-Matched Mentorship (Zero Program Staff)
+# PivotConnect — Evidence-Aware Mentor Coordination Prototype
 
-**Build with Gemini · XPRIZE Submission**
+**Build with Gemini · XPRIZE submission by Pivot Holdings International**
 
-PivotConnect is an AI-powered mentorship platform that connects aspiring entrepreneurs with seasoned, often-retired executives — and runs the entire relationship (matching, introductions, scheduling, and ongoing accountability) with **zero program staff**. The AI does the coordination; humans provide the wisdom.
+PivotConnect is a development-stage prototype exploring how AI could help entrepreneurs describe their needs, review explainable mentor recommendations, and prepare for a mentor relationship while keeping consequential decisions under human control.
 
-> **The idea in one line:** What if every aspiring entrepreneur could have a seasoned CEO as their mentor — matched, introduced, and supported by AI?
+> **Truth note:** The public walkthrough is a deterministic interactive prototype. Founder and mentor identities, scores, messages, introductions, scheduling, and outcomes are synthetic or representative. It does not use live Gemini inference, a live mentor directory, or production users.
 
----
+## Try it out
 
-## 🎥 See It Running
+- **Interactive prototype (no login or API key):** https://bdpivot.github.io/pivotconnect-xprize/
+- **Recorded development walkthrough and screenshots:** [`demo/evidence/`](demo/evidence/)
+- **Gemini development-test evidence:** [`Product_Evidence/`](Product_Evidence/)
 
-- **Live demo (GitHub Pages):** https://bdpivot.github.io/pivotconnect-xprize/
-- **Recorded walkthrough + screenshots:** [`demo/evidence/`](demo/evidence/)
+The prototype lets a reviewer:
 
-The live demo is a self-contained, click-through walkthrough of the full PivotConnect user journey — from a founder's first message to a confirmed mentorship session and an ongoing accountability dashboard.
+1. Review or edit a synthetic founder profile.
+2. See representative mentor candidates with visible matching factors and caveats.
+3. Inspect a mentor detail view before any represented introduction.
+4. Explicitly acknowledge the synthetic data and approve the represented introduction.
+5. Review preparation and follow-up states.
+6. Inspect a four-part evidence legend separating verified evidence, implemented/tested code, prototype simulation, and planned work.
 
----
+## What is implemented and tested
 
-## 🧭 The User Journey (what the demo shows)
+The repository contains a Node.js/Express architecture for specialized coaching, research, grant, financial-modeling, and mentor-oriented routes. Development logs document controlled successful tests involving:
 
-1. **Founder describes their business** — a first-time entrepreneur wants to start a sustainable fashion brand with $15K and no industry experience.
-2. **AI matching (Compass agent)** — analyzes needs and surfaces 4 compatible mentors, ranked by a deep-compatibility score (Margaret Chen, 96%).
-3. **Mentor profile + intro video** — the founder reviews the top match, including a short video introduction.
-4. **AI-drafted introduction** — the system writes a personalized outreach message highlighting shared ground.
-5. **Scheduling** — the mentor accepts; the founder books a first session from available slots.
-6. **Confirmed session + prep checklist** — the AI prepares an agenda so the hour is well spent.
-7. **Mentorship dashboard** — goals, milestones, and weekly AI check-ins keep the relationship on track over a 12-week program.
+- Gemini 2.5 Pro and Gemini 2.5 Flash model calls
+- Gemini Code Execution for a synthetic financial scenario
+- Google Search Grounding with query and citation metadata
 
----
+These artifacts support development testing only; they do not establish production deployment, operational scale, real mentor matching, or participant outcomes. Some evidence logs also preserve failed attempts for completeness.
 
-## 🤖 How Gemini Powers It
+## What the public walkthrough represents
 
-PivotConnect is built on Google's Gemini models (via Vertex AI):
+The public page uses deterministic browser-side logic so judges can review the proposed workflow without credentials, network dependencies, or variable model output. Its profile extraction, rankings, explanations, introduction, preparation, and follow-up states are representative product behavior—not live AI results.
 
-- **Gemini 2.5 Pro** — reasoning, coaching, orchestration, and function-calling to route tasks between specialized agents
-- **Gemini 2.5 Flash** — fast conversational responses
-- **Embeddings** — semantic compatibility matching between founders and mentors (beyond keyword matching)
+## What remains planned
 
-### Multi-Agent Architecture
+- Production authentication, authorization, monitoring, and data-retention controls
+- A consented and verified mentor directory
+- Live matching, scheduling, messaging, and relationship tracking
+- Fairness, accessibility, security, and match-quality evaluation
+- A governed pilot with real participant consent and measured outcomes
 
-| Agent | Role | Model |
-|-------|------|-------|
-| 🦅 Phoenix | Business coach & orchestrator | Gemini 2.5 Pro + Flash |
-| 🧭 Compass / PivotConnect | Mentor matching | Embeddings + Flash |
-| 🗺️ Atlas | Market research | Gemini 2.5 Pro |
-| ⚡ Catalyst | Grant matching | Gemini 2.5 Pro + Embeddings |
-| 📊 Ledger | Financial modeling | Gemini 2.5 Pro |
+## Repository structure
 
-The orchestrator uses Gemini **function calling** to intelligently route a user's request to the right specialized agent.
-
----
-
-## 📂 Repository Structure
-
-```
+```text
 pivotconnect-xprize/
-├── docs/                      # Live GitHub Pages demo (self-contained)
-│   ├── index.html             #   → the interactive walkthrough
-│   └── assets/                #   → mentor intro video
-├── demo/                      # Demo source + running evidence
-│   ├── public/                #   → demo HTML (mentor-demo-v2.html)
-│   ├── server.js              #   → tiny Express static server
-│   └── evidence/              #   → recorded walkthrough + screenshots
-├── src/                       # Application source
-│   ├── agents/                #   → Phoenix, Compass, Atlas, Catalyst, Ledger
-│   ├── api/                   #   → Express API server + routes
-│   ├── integrations/gemini/   #   → Vertex AI / Gemini client
-│   ├── config/                #   → configuration
-│   └── utils/                 #   → logging
-├── examples/                  # Runnable agent test (examples/test-phoenix.js)
-├── scripts/setup.sh           # Automated setup
-├── Dockerfile                 # Container build
-├── cloudbuild.yaml            # Cloud Run deployment
-├── .env.example               # Environment variable template (no secrets)
+├── docs/                    # Public deterministic GitHub Pages prototype
+├── demo/                    # Demo source and recorded development evidence
+├── Product_Evidence/        # Selected Gemini development-test logs
+├── src/                     # API, agents, integrations, config, and utilities
+├── examples/                # Development examples
+├── .env.example             # Environment template; no credentials
 └── package.json
 ```
 
----
+## Run locally
 
-## 🚀 Run It Locally
+### Deterministic prototype — no keys required
 
-### The demo (no keys required)
 ```bash
 cd demo
 npm install
 npm start
-# open http://localhost:3000/mentor-demo-v2.html
+# Open http://localhost:3000/mentor-demo-v2.html
 ```
 
-### The full API + agents (requires a Google Cloud project with Vertex AI)
+### API architecture — Google Cloud configuration required
+
 ```bash
-cp .env.example .env      # then fill in your GCP project + credentials
+cp .env.example .env
+# Add your own Google Cloud project configuration and credentials.
 npm install
-npm start                 # API server on http://localhost:8080
+npm start
 ```
 
-See [`SETUP_GUIDE.md`](SETUP_GUIDE.md) and [`QUICK_START.md`](QUICK_START.md) for details.
+See [`SETUP_GUIDE.md`](SETUP_GUIDE.md) and [`QUICK_START.md`](QUICK_START.md) for development setup. Never commit credentials or private participant data.
 
-> **Note:** No secrets or API keys are included in this repository. `.env.example` is a template only.
+## Evidence boundary
 
----
+**This repository demonstrates:** an inspectable product workflow, implemented API and agent code, and selected controlled Gemini capability tests.
 
-## 🌍 About Pivot Holdings International
+**It does not demonstrate:** a production service, real mentors or founders, verified matches, completed meetings, validated impact, staffing reduction, or a proven operating model.
 
-PivotConnect is one program within **Pivot Holdings International (PHI)**, a 501(c)(3) foundation making entrepreneurship accessible to anyone willing to do the work — veterans, single parents, artists, farmers, and more.
+## About Pivot Holdings International
+
+PivotConnect is a program concept of **Pivot Holdings International**, a 501(c)(3) private foundation focused on expanding access to entrepreneurship education, mentorship, and AI-enabled tools.
 
 - Website: https://pivotintl.org
 
----
+## License
 
-## 📄 License
-
-MIT — see [LICENSE](LICENSE).
+MIT — see [`LICENSE`](LICENSE).

@@ -1,0 +1,39 @@
+The VertexAI class and all its dependencies are deprecated as of June 24, 2025 and will be removed on June 24, 2026. Please use the Google Gen AI SDK (https://www.npmjs.com/package/@google/genai) to access Gemini features. For details, see https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk.
+2026-08-01T02:03:00.508Z [[32minfo[39m]: Gemini client initialized {"service":"launchpad-ai","environment":"development","project":"phi-openclaw","location":"us-central1","models":["pro","flash","embedding"]}
+==============================================
+ PivotConnect — Gemini Usage Evidence Run
+ Project:  phi-openclaw
+ Location: us-central1
+ Models:   {"pro":"gemini-2.5-pro","flash":"gemini-2.5-flash","embedding":"text-embedding-004"}
+ Started:  2026-08-01T02:03:00.512Z
+==============================================
+
+2026-08-01T02:03:12.384Z [[32minfo[39m]: Gemini 2.5 Pro response {"service":"launchpad-ai","environment":"development","candidatesCount":1,"hasText":true,"hasFunctionCall":false,"hasCodeExecution":false}
+[2026-08-01T02:03:12.384Z] PRO   ok   model=gemini-2.5-pro finish=MAX_TOKENS chars=40
+2026-08-01T02:03:15.392Z [[32minfo[39m]: Gemini 2.5 Pro response {"service":"launchpad-ai","environment":"development","candidatesCount":1,"hasText":true,"hasFunctionCall":false,"hasCodeExecution":false}
+[2026-08-01T02:03:15.392Z] PRO   ok   model=gemini-2.5-pro finish=MAX_TOKENS chars=36
+2026-08-01T02:03:18.497Z [[32minfo[39m]: Gemini 2.5 Pro response {"service":"launchpad-ai","environment":"development","candidatesCount":1,"hasText":true,"hasFunctionCall":false,"hasCodeExecution":false}
+[2026-08-01T02:03:18.497Z] PRO   ok   model=gemini-2.5-pro finish=MAX_TOKENS chars=32
+2026-08-01T02:03:19.493Z [[32minfo[39m]: Gemini 2.0 Flash response {"service":"launchpad-ai","environment":"development","responseLength":12}
+[2026-08-01T02:03:19.493Z] FLASH ok   model=gemini-2.5-flash finish=MAX_TOKENS chars=12
+2026-08-01T02:03:20.505Z [[32minfo[39m]: Gemini 2.0 Flash response {"service":"launchpad-ai","environment":"development","responseLength":40}
+[2026-08-01T02:03:20.505Z] FLASH ok   model=gemini-2.5-flash finish=MAX_TOKENS chars=40
+2026-08-01T02:03:21.606Z [[32minfo[39m]: Gemini 2.0 Flash response {"service":"launchpad-ai","environment":"development","responseLength":28}
+[2026-08-01T02:03:21.606Z] FLASH ok   model=gemini-2.5-flash finish=MAX_TOKENS chars=28
+2026-08-01T02:03:21.607Z [[31merror[39m]: Gemini Embeddings error {"service":"launchpad-ai","environment":"development","error":"this.models.embedding.embedContent is not a function"}
+[2026-08-01T02:03:21.607Z] EMBED ERR  Gemini Embeddings generation failed: this.models.embedding.embedContent is not a function
+2026-08-01T02:03:21.607Z [[31merror[39m]: Gemini Embeddings error {"service":"launchpad-ai","environment":"development","error":"this.models.embedding.embedContent is not a function"}
+[2026-08-01T02:03:21.607Z] EMBED ERR  Gemini Embeddings generation failed: this.models.embedding.embedContent is not a function
+2026-08-01T02:03:21.607Z [[31merror[39m]: Gemini Embeddings error {"service":"launchpad-ai","environment":"development","error":"this.models.embedding.embedContent is not a function"}
+[2026-08-01T02:03:21.607Z] EMBED ERR  Gemini Embeddings generation failed: this.models.embedding.embedContent is not a function
+2026-08-01T02:03:21.607Z [[31merror[39m]: Gemini Embeddings error {"service":"launchpad-ai","environment":"development","error":"this.models.embedding.embedContent is not a function"}
+[2026-08-01T02:03:21.607Z] EMBED ERR  Gemini Embeddings generation failed: this.models.embedding.embedContent is not a function
+
+==============================================
+ Summary
+  Gemini 2.5 Pro calls:   3
+  Gemini 2.5 Flash calls: 3
+  Embedding calls:        0
+  Errors:                 4
+  Finished: 2026-08-01T02:03:21.607Z
+==============================================
